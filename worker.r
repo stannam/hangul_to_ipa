@@ -84,7 +84,7 @@ toJamo <- function(data, removeEmptyOnset = TRUE, sboundary = FALSE) {
 
 CV_mark <- function(input){
   # This function is for identifying a Jamo as either consonant or vowel.
-  CV_ref <- read_csv(file = ".\\stable\\klattese.csv")
+  CV_ref <- read_csv(file = ".\\stable\\ipa.csv")
   output <- vector()
   phoneme <- unlist(strsplit(input,split=""))
   for (j in 1:length(phoneme)){
@@ -98,7 +98,10 @@ CV_mark <- function(input){
   return(output)
 }
 
-applyRulesToHangul <- function(data, entry = "entry", rules = "pacstnh"){
+applyRulesToHangul <- function(data, 
+                               entry = "entry", 
+                               rules = "pacstnhv",
+                               convention = "ipa"){
   
   # 규칙의 종류와 순서
   # (P)alatalization: 구개음화 (맏이 -> 마지)
@@ -107,7 +110,8 @@ applyRulesToHangul <- function(data, entry = "entry", rules = "pacstnh"){
   # a(S)similation: 음운동화
   # (T)ensification: 표준발음법 제23항(예외없는 경음화) 적용
   # coda (N)eutralization: 음절말 장애음 중화 (빛/빚/빗 -> 빝)
-  # intervocalic (H)-deletion: 모음사이 'ㅎ' 삭제
+  # intervocalic (H)-deletion: 공명음 사이 'ㅎ' 삭제
+  # intervocalic Obstruent (V)oicing: 공명음 사이 장애음 유성음화
   
   if (class(data)[1]!="character") {
     if (any(class(data)=="data.frame")){
@@ -187,7 +191,7 @@ applyRulesToHangul <- function(data, entry = "entry", rules = "pacstnh"){
         }
       }
     }
-    rm(criteria_DoubleCoda)
+    rm(criteria_DoubleCoda, CCC_location, CCC_part)
   }
   
   if(grepl("s",rules)){
@@ -229,22 +233,66 @@ applyRulesToHangul <- function(data, entry = "entry", rules = "pacstnh"){
     h_location <- grep("ㅎ",phoneme[2:length(phoneme)])
     h_location <- h_location + 1
     h_deletion_criteria <- c("V","C","V")
+    
     for (i in rev(h_location)){
       if (i < length(phoneme)){
-        check_h_deletion <- split_cv[(i-1):(i+1)]
-        if (all(check_h_deletion == h_deletion_criteria)) {
+        
+        # check if /ㅎ/ comes after a sonorant
+        if(grepl(phoneme[i-1], 'ㄴㄹㅇㅁ', fixed = TRUE)){ 
           split_cv <- c(split_cv[1:(i-1)], split_cv[(i+1):length(split_cv)])
           phoneme <- c(phoneme[1:(i-1)], phoneme[(i+1):length(phoneme)])
+        } else {
+          # check if /ㅎ/ comes in between two vowels
+          check_h_deletion <- split_cv[(i-1):(i+1)]
+          if (all(check_h_deletion == h_deletion_criteria)) {
+            split_cv <- c(split_cv[1:(i-1)], split_cv[(i+1):length(split_cv)])
+            phoneme <- c(phoneme[1:(i-1)], phoneme[(i+1):length(phoneme)])
+          }  
+        }
+        
+      }
+    }
+    
+    cv <- paste0(split_cv, collapse="")
+    jamo <- paste0(phoneme, collapse="")
+    
+    rm(phoneme, split_cv, h_location, h_deletion_criteria)
+  }
+  
+  # 규칙적용 완료. 이하, IPA로 변환.
+  if (convention == "ipa"){
+    romanization <- read_csv(file = ".\\stable\\ipa.csv")
+  } else if (convention == "yale"){
+    romanization <- read_csv(file = ".\\stable\\yale.csv")
+  }
+  jamo <- unlist(strsplit(jamo,split=""))
+  for (l in 1:length(jamo)){
+    if(is.na(match(jamo[l], romanization$C))==T){
+      jamo[l] <- as.character(romanization$VKlattese[match(jamo[l], romanization$V)])
+    } else {
+      jamo[l]<-as.character(romanization$CKlattese[match(jamo[l],romanization$C)])}
+  }
+  
+  # 마지막으로 음성작용인 intervocalic voicing 적용
+  if(grepl("v", rules) && convention == "ipa"){
+    sonorants = c("n","l","ŋ","m")
+    cv_split = unlist(strsplit(cv, split=''))
+    for(j in 1:length(jamo)){
+
+      if(jamo[j] %in% sonorants || cv_split[j] == "V"){
+        if(!is.na(jamo[j+2]) && (jamo[j+2] %in% sonorants || cv_split[j+2] == "V")){
+          if(jamo[j+1]=="p"){jamo[j+1] <- "b"}
+          if(jamo[j+1]=="t"){jamo[j+1] <- "d"}
+          if(jamo[j+1]=="k"){jamo[j+1] <- "ɡ"}
         }
       }
     }
-    cv <- paste0(split_cv, collapse="")
-    jamo <- paste0(phoneme, collapse="")
-    rm(phoneme, split_cv)
+    rm(sonorants, cv_split)
+    
   }
-  # 규칙적용 완료. 이하, IPA로 변환.
   
-  # 마지막으로 음성작용인 intervocalic voicing 적용
-  output <- jamo
+  
+  
+  output <- paste(jamo, collapse="")
   return(output)
 }
