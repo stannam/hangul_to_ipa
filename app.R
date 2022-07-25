@@ -5,6 +5,7 @@ Usage: app.R
 
 # 1. Load libraries
 library(dash)
+library(here)
 #library(dashCoreComponents)
 #library(dashHtmlComponents)
 suppressPackageStartupMessages(library(plotly))
