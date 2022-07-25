@@ -5,8 +5,8 @@ Usage: app.R
 
 # 1. Load libraries
 library(dash)
-library(dashCoreComponents)
-library(dashHtmlComponents)
+#library(dashCoreComponents)
+#library(dashHtmlComponents)
 suppressPackageStartupMessages(library(plotly))
 suppressPackageStartupMessages(library(tidyverse))
 
@@ -28,10 +28,10 @@ all_rules <- list(
 )
 
 ## Assign components to variables
-heading_title <- htmlH1('한글 → [haŋgɯl]')
+heading_title <- dash::h1('한글 → [haŋgɯl]')
 
 ## Specify layout elements
-div_header <- htmlDiv(
+div_header <- dash::div(
   list(
     heading_title
   ),
@@ -44,35 +44,35 @@ div_header <- htmlDiv(
   )
 )
 
-div_side <- htmlDiv(
+div_side <- dash::div(
   list(
-    htmlH2("Use this app to transcribe 한글 into [haŋgɯl]"),
+    dash::h2("Use this app to transcribe 한글 into [haŋgɯl]"),
     html$label("Enter your Korean word(s) below and get it transcribed in IPA or romanized in the Yale system."),
-    htmlBr(),
-    htmlBr(),
+    dash::br(),
+    dash::br(),
     dccInput(id = 'text_input',value = '안녕하세요', type = 'text', debounce = TRUE),
-    htmlBr(),
-    htmlBr(),
-    htmlP("You can choose to apply all or some phonological rules.
+    dash::br(),
+    dash::br(),
+    dash::p("You can choose to apply all or some phonological rules.
         Click the link below for details"),
-    htmlA('[Readme]', href='https://github.com/stannam/hangul_to_ipa#readme',target='_blank'),
-    htmlBr(),
+    dash::a('[Readme]', href='https://github.com/stannam/hangul_to_ipa#readme',target='_blank'),
+    dash::br(),
     html$hr(),
-    htmlH3("What do you want to do?"),
+    dash::h3("What do you want to do?"),
     dccRadioItems(
       id = 'conventions-radio',
       options = list(list(label = 'IPA Transcription\n', value = 'ipa'),
                      list(label = 'Yale Romanization', value = 'yale')),
       value = 'ipa'
     ),
-    htmlBr(),
+    dash::br(),
     html$hr(),
-    htmlH3("Phonological rules"),
+    dash::h3("Phonological rules"),
     dccChecklist(id = 'rules-checkbox'),
-    htmlBr(),
-    htmlA('[Help]',href='https://github.com/stannam/hangul_to_ipa/blob/main/README.md#phonological-rules-applied-in-this-order',target='_blank'),
-    htmlBr(),
-    htmlBr()
+    dash::br(),
+    dash::a('[Help]',href='https://github.com/stannam/hangul_to_ipa/blob/main/README.md#phonological-rules-applied-in-this-order',target='_blank'),
+    dash::br(),
+    dash::br()
     
     
   ), style = list('background-color'='lightgrey', 
@@ -81,7 +81,7 @@ div_side <- htmlDiv(
                   'width'= '50%')
 )
 
-div_res <- htmlDiv(
+div_res <- dash::div(
   list(
     div(id = 'input'),
     div(id = 'output')
@@ -93,13 +93,13 @@ app <- Dash$new()
 # 3. Specify App layout
 app$layout(
   
-  htmlDiv(
+  dash::div(
     list(
       # title bar
       div_header,
       
       # under the title bar -- contain side bar (description and data source), and main bar (two tabs)
-      htmlDiv(
+      dash::div(
         list(
           # Side bar
           div_side,
@@ -174,6 +174,6 @@ app$callback(
 )
 
 # 4. Run app, change for deploy online
-app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
+# app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
 
-# app$run_server(debug = T)  ## local debugging
+app$run_server(debug = T)  ## local debugging
