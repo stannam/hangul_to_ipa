@@ -46,35 +46,38 @@ div_header <- htmlDiv(
 
 div_side <- htmlDiv(
   list(
-    dccMarkdown("
-    **Use this app to transcribe 한글 into [haŋgɯl] (the IPA transcription of '한글')**"),
+    htmlH2("Use this app to transcribe 한글 into [haŋgɯl]"),
     html$label("Enter your Korean word(s) below and get it transcribed in IPA or romanized in the Yale system."),
+    htmlBr(),
     htmlBr(),
     dccInput(id = 'text_input',value = '안녕하세요', type = 'text', debounce = TRUE),
     htmlBr(),
     htmlBr(),
-    dccMarkdown("You can choose to apply all or some phonological rules.
-        See [here](https://github.com/stannam/hangul_to_ipa#readme) for details"),
+    htmlP("You can choose to apply all or some phonological rules.
+        Click the link below for details"),
+    htmlA('[Readme]', href='https://github.com/stannam/hangul_to_ipa#readme',target='_blank'),
     htmlBr(),
     html$hr(),
-    dccMarkdown("**What do you want to do?**"),
+    htmlH3("What do you want to do?"),
     dccRadioItems(
       id = 'conventions-radio',
-      options = list(list(label = 'IPA Transcription', value = 'ipa'),
+      options = list(list(label = 'IPA Transcription\n', value = 'ipa'),
                      list(label = 'Yale Romanization', value = 'yale')),
       value = 'ipa'
     ),
     htmlBr(),
     html$hr(),
-    dccMarkdown("**Phonological rules ([help](https://github.com/stannam/hangul_to_ipa/blob/main/README.md#phonological-rules-applied-in-this-order))**"),
+    htmlH3("Phonological rules"),
     dccChecklist(id = 'rules-checkbox'),
-    html$hr()
+    htmlBr(),
+    htmlA('[Help]',href='https://github.com/stannam/hangul_to_ipa/blob/main/README.md#phonological-rules-applied-in-this-order',target='_blank'),
+    htmlBr(),
+    htmlBr()
     
     
   ), style = list('background-color'='lightgrey', 
                   'columnCount'=1, 
                   'white-space'='pre-line',
-                  'margin-left' = '10px',
                   'width'= '50%')
 )
 
@@ -102,7 +105,8 @@ app$layout(
           div_side,
           # main bar -- the two tabs
           div_res
-        ), style=list('display'='flex')
+        ), style=list('display'='flex',
+                      'font-family'='Arial, Helvetica, sans-serif')
       )
     )
   )
@@ -172,4 +176,4 @@ app$callback(
 # 4. Run app, change for deploy online
 # app$run_server(host = '127.0.0.1', port = Sys.getenv('PORT', 8050))
 
-app$run_server(debug = F)
+app$run_server(debug = T)
