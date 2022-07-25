@@ -259,7 +259,7 @@ applyRulesToHangul <- function(data,
     rm(phoneme, split_cv, h_location, h_deletion_criteria)
   }
   
-  # 규칙적용 완료. 이하, IPA로 변환.
+  # 규칙적용 완료. 이하, IPA나 Yale로 변환.
   if (convention == "ipa"){
     romanization <- read_csv(file = ".\\stable\\ipa.csv")
   } else if (convention == "yale"){
@@ -273,8 +273,20 @@ applyRulesToHangul <- function(data,
       jamo[l]<-as.character(romanization$CKlattese[match(jamo[l],romanization$C)])}
   }
   
+  # Yale convention에서 bilabial 뒤 high mid/back vowel merger 적용하기
+  if (grepl("u", rules) && convention == "yale"){
+    bilabials = c("p","pp","ph")
+    for(j in 1:length(jamo)){
+      if (jamo[j] %in% bilabials){
+        if (!is.na(jamo[j+1]) && jamo[j+1] == "wu"){
+          jamo[j+1] <- "u"
+        }
+      }
+    }
+  }
+  
   # 마지막으로 음성작용인 intervocalic voicing 적용
-  if(grepl("v", rules) && convention == "ipa"){
+  if (grepl("v", rules) && convention == "ipa"){
     sonorants = c("n","l","ŋ","m")
     cv_split = unlist(strsplit(cv, split=''))
     for(j in 1:length(jamo)){
