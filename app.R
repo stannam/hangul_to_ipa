@@ -28,6 +28,21 @@ all_rules <- list(
   'yale' = list(c('High vowel neutralization (i.e., High vowels must be unrounded after a bilabial)','u'))
 )
 
+sample_pool <- c("안녕하세요",
+                 "너는 음운론이 좋니?",
+                 "닭도리탕",
+                 "각막",
+                 "한라산",
+                 "법률",
+                 "밥물",
+                 "굳이?",
+                 "햇님",
+                 "백만장자",
+                 "읊지마",
+                 "밝잖니",
+                 "발냄새")  
+sample_word <- sample(sample_pool,1)# the first word that is randomly presented to the user
+
 ## Assign components to variables
 heading_title <- dash::h1('한글 → [haŋgɯl]')
 
@@ -51,7 +66,28 @@ div_side <- dash::div(
     html$label("Enter your Korean word(s) below and get it transcribed in IPA or romanized in the Yale system."),
     dash::br(),
     dash::br(),
-    dccInput(id = 'text_input',value = '안녕하세요', type = 'text', debounce = TRUE),
+    dccInput(id = 'text_input',value = sample_word, type = 'text', debounce = TRUE),
+    # dash::br(),
+    # dash::br(),
+    # html$label("Or, upload a wordlist as a .txt file. Make sure to set parameters below before uploading a file!"),
+    # dccUpload(id='upload-file', 
+    #           children=dash::div(list(
+    #             'Drag and Drop or ',
+    #             dash::a('Select File')
+    #             )),
+    #           style=list('width'='80%',
+    #                      'height' = '60px',
+    #                      'lineHeight'='60px',
+    #                      'borderWidth'= '1px',
+    #                      'borderStyle'= 'dashed',
+    #                      'borderRadius'= '5px',
+    #                      'textAlign'= 'center',
+    #                      'margin'= '10px'
+    #           ),
+    #           multiple=FALSE # does not allow uploading multiple files
+    #           ),
+    
+    dash::br(),
     dash::br(),
     dash::br(),
     dash::p("You can choose to apply all or some phonological rules.
@@ -175,6 +211,6 @@ app$callback(
 )
 
 # 4. Run app, change for deploy online
-app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
+## app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
 
-##app$run_server(debug = T)  ## local debugging
+app$run_server(debug = T)  ## local debugging

@@ -58,7 +58,7 @@ convertHangulStringToJamos <- function(word){
 toJamo <- function(data, removeEmptyOnset = TRUE, sboundary = FALSE) {
   # Hangul forms to Jamo
   criteria_DoubleCoda <- read_csv(file=here::here('stable','double_coda.csv'), show_col_types = FALSE)
-  
+
   syllable <- convertHangulStringToJamos(data)
   for (j in 1:length(syllable)) {
     DC <- match(substr(syllable[j],3,3), criteria_DoubleCoda$double)
@@ -126,7 +126,6 @@ applyRulesToHangul <- function(data,
       return(result)
     } else stop("Please input a character, data.frame or tbl object.")
   }
-  
   rules <-tolower(rules)
   if(!grepl("p",rules)){
     jamo <- toJamo(data, removeEmptyOnset = T)
@@ -152,7 +151,7 @@ applyRulesToHangul <- function(data,
     jamo <- gsub("x","ㄷ",jamo)
     jamo <- gsub("X","ㅌ",jamo)
     
-    rm(criteria_DoubleCoda, syllable, phonemic)
+    rm(criteria_DoubleCoda, syllable, phonemic, DC)
   }
   
   if(grepl("a",rules)){
@@ -268,7 +267,11 @@ applyRulesToHangul <- function(data,
   jamo <- unlist(strsplit(jamo,split=""))
   for (l in 1:length(jamo)){
     if(is.na(match(jamo[l], romanization$C))==T){
-      jamo[l] <- as.character(romanization$VKlattese[match(jamo[l], romanization$V)])
+      if(is.na(match(jamo[l], romanization$V))==T){
+        if(jamo[l]!=' '){jamo[l]<-""}
+      } else {
+        jamo[l] <- as.character(romanization$VKlattese[match(jamo[l], romanization$V)])
+      }
     } else {
       jamo[l]<-as.character(romanization$CKlattese[match(jamo[l],romanization$C)])}
   }
@@ -296,6 +299,7 @@ applyRulesToHangul <- function(data,
           if(jamo[j+1]=="p"){jamo[j+1] <- "b"}
           if(jamo[j+1]=="t"){jamo[j+1] <- "d"}
           if(jamo[j+1]=="k"){jamo[j+1] <- "ɡ"}
+          if(jamo[j+1]=="tɕ"){jamo[j+1] <- "dʑ"}
         }
       }
     }
