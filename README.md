@@ -1,7 +1,8 @@
 # hangul_to_ipa
 A dash app that transcribes 한글 into [hɑŋɡɯl].
 
-Enter 한글, get [hɑŋɡɯl].
+**Enter 한글, get [hɑŋɡɯl].**
+**Click [here](https://hangul-to-ipa.herokuapp.com/) to use.**
 
 This web app applies phonological rules to Korean orthographic forms (Hangul/Hangeul/한글) and transcribe them into IPA. It automatically applies phonological rules from [Shin, Kiaer, and Cha (2012) Ch. 8](https://doi.org/10.1017/CBO9781139342858.010). These are rules related to surface phonotactics and syllable structure constraints. The R implementation is motivated by '[hangul converter](https://github.com/stannam/KPNN/blob/master/hangul_converter.r),' a part of KPNN. 
 
