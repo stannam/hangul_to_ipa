@@ -13,6 +13,8 @@ install.packages('remotes')
 
 remotes::install_github('plotly/dashR', upgrade=TRUE)
 install.packages('tidyverse')
+install.packages('jasonlite')
 install.packages('plotly')
+install.packages('utf8')
 install.packages('here')
 install.packages('pbapply')

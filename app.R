@@ -6,8 +6,8 @@ Usage: app.R
 # 1. Load libraries
 library(dash)
 library(here)
-#library(dashCoreComponents)
-#library(dashHtmlComponents)
+library(jsonlite)
+library(utf8)
 suppressPackageStartupMessages(library(plotly))
 suppressPackageStartupMessages(library(tidyverse))
 
@@ -19,32 +19,31 @@ all_rules <- list(
   'ipa' = list(c("Palatalization 구개음화 (e.g., mɑt-i → mɑdʒi 'the eldest child')\n","p"),
                c("Aspiration 격음화 (e.g., pukhɑn → pukʰɑn 'North Korea')\n","a"),
                c("Complex coda simplification 자음군단순화 (e.g., talk → tak 'Chicken')\n","c"),
-               c("Place assimilation 음운동화 (i.e., Obstruent nasalisation, Liquid nasalisation and Lateralisation\n","s"),
+               c("Manner assimilation 음운동화 (i.e., Obstruent nasalisation, Liquid nasalisation and Lateralisation)\n","s"),
                c("Post-obstruent tensification (e.g., pɑksu → pɑks*u 'hand clap')\n","t"),
                c("Coda neutralization 음절말 장애음 중화 (e.g., bitɕʰ / bitɕ / bis → bit 'light / debt / hair comb')\n","n"),
                c("Intervocalic H-deletion 모음사이 'ㅎ' 삭제 (e.g., sʌnho → sʌno 'preference')\n","h"),
-               c("Intervocalic obstruent voicing 장애음 유성음화 (e.g., tɕikɑk → tɕiɡɑk 'being late')\n","v")
+               c("Intervocalic obstruent voicing 장애음 유성음화 (e.g., tɕikɑk → tɕiɡɑk 'being late')\n","v"),
+               c("Optional non-coronalization 수의적 조음위치동화 (e.g., hɑnkɯl → hɑŋɡɯl 'the Korean alphabet')\n","o")
                ),
   'yale' = list(c('High vowel neutralization (i.e., High vowels must be unrounded after a bilabial)','u'))
 )
 
-sample_pool <- c("안녕하세요",
-                 "너는 음운론이 좋니?",
-                 "닭도리탕",
-                 "각막",
-                 "한라산",
-                 "법률",
-                 "밥물",
-                 "굳이?",
-                 "햇님",
-                 "백만장자",
-                 "읊지마",
-                 "밝잖니",
-                 "발냄새")  
+sample_pool <- c("안녕하세요", "너는 음운론이 좋니?",  # random sentences
+                 "닭도리탕", "읊지마", "밝잖니",   # complex coda simplification
+                 "각막", "법률", "범람", # nasalization
+                 "한라산", "발냄새", # lateralization
+                 "밥물", "햇님", "억만장자", # manner assimilation
+                 "굳이?", "맏이",  # palatalization
+                 "툭하면",  # aspiration
+                 "박수", # Post-obstruent tensification
+                 "만화", # optional h-deletion
+                 "한글", "감기", "신문" # optional non-coronalization
+                 )  
 sample_word <- sample(sample_pool,1)# the first word that is randomly presented to the user
 
 ## Assign components to variables
-heading_title <- dash::h1('한글 → [haŋgɯl]')
+heading_title <- dash::h1('한글 → [hɑŋɡɯl]')
 
 ## Specify layout elements
 div_header <- dash::div(
@@ -66,30 +65,28 @@ div_side <- dash::div(
     html$label("Enter your Korean word(s) below and get it transcribed in IPA or romanized in the Yale system."),
     dash::br(),
     dash::br(),
-    dccInput(id = 'text_input',value = sample_word, type = 'text', debounce = TRUE),
-    # dash::br(),
-    # dash::br(),
-    # html$label("Or, upload a wordlist as a .txt file. Make sure to set parameters below before uploading a file!"),
-    # dccUpload(id='upload-file', 
-    #           children=dash::div(list(
-    #             'Drag and Drop or ',
-    #             dash::a('Select File')
-    #             )),
-    #           style=list('width'='80%',
-    #                      'height' = '60px',
-    #                      'lineHeight'='60px',
-    #                      'borderWidth'= '1px',
-    #                      'borderStyle'= 'dashed',
-    #                      'borderRadius'= '5px',
-    #                      'textAlign'= 'center',
-    #                      'margin'= '10px'
-    #           ),
-    #           multiple=FALSE # does not allow uploading multiple files
-    #           ),
     
+    # textbox interface
+    dccInput(id = 'text_input',value = sample_word, type = 'text', debounce = TRUE),
     dash::br(),
     dash::br(),
-    dash::br(),
+    
+    # fileIO interface (upload wordlist and download results)
+    ## html$label("Or, upload a wordlist as a .txt file. Make sure to set parameters below before uploading a file!"),
+    ## dccUpload(id='upload-file', 
+    ##          children=dash::div(list('Drag and Drop or ', dash::a('Select File'))),
+    ##          style=list('width'='80%',
+    ##                     'height' = '60px',
+    ##                     'lineHeight'='60px',
+    ##                     'borderWidth'= '1px',
+    ##                     'borderStyle'= 'dashed',
+    ##                     'borderRadius'= '5px',
+    ##                     'textAlign'= 'center',
+    ##                     'margin'= '10px'),
+    ##          multiple=TRUE # does not allow uploading multiple files
+    ##          ),
+    ## dash::br(),
+    ## dash::br(),
     dash::p("You can choose to apply all or some phonological rules.
         Click the link below for details"),
     dash::a('[Readme]', href='https://github.com/stannam/hangul_to_ipa#readme',target='_blank'),
@@ -121,7 +118,12 @@ div_side <- dash::div(
 div_res <- dash::div(
   list(
     div(id = 'input'),
-    div(id = 'output')
+    div(id = 'output'),
+    dash::br(),
+    dash::br(),
+    dash::br(),
+    dash::br(),
+    div(id='output-df')
   ), style = list('margin-left' = '10px'))
 
 # 2. Create Dash instance
@@ -209,6 +211,45 @@ app$callback(
     
   }
 )
+
+
+# File IO: If .txt uploaded, run the worker and throw a text file back.
+## app$callback(
+##   output('output-df', 'children'),
+##   param = list(input('upload-file','contents'),
+##                input('rules-checkbox','value'),
+##                input('conventions-radio', 'value')),
+##   function(inputfile, rule_selection, convention){
+##     if(!is.null(unlist(inputfile))){
+##       content_string = base64_dec(strsplit(unlist(inputfile),split=',')[[1]][2])
+##       decoded = rawToChar(content_string)
+##       df = read.csv(text=decoded, header=FALSE)
+##       if(nrow(df) < ncol(df)){
+##         df <- t(df)
+##       }
+##       for(coln in 1:ncol(df)){
+##         determin = df[1,coln]
+##         if(is.na(as.numeric(determin))){
+##           process_this = df %>% select(coln)
+##           colnames(process_this) <- "entry"
+##           process_this <- head(process_this,100)
+##           break
+##         }
+##       }
+##       rules_chr = paste(unlist(rule_selection),collapse='')
+##       res = applyRulesToHangul(data = process_this,
+##                                rules = rules_chr,
+##                                convention = convention)
+##       browser()
+##       
+##       return(
+##         res
+##       )
+##     }
+##     
+##     
+##   }
+## )
 
 # 4. Run app, change for deploy online
 ## app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))

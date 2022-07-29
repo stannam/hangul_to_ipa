@@ -171,6 +171,7 @@ applyRulesToHangul <- function(data,
   if(grepl("c",rules)){
     criteria_DoubleCoda <- read_csv(file=here::here('stable','double_coda.csv'), show_col_types = FALSE)
     CCC_location<-unlist(gregexpr("VCCC",cv))
+    if (CCC_location > 0) {
     for (l in CCC_location){
       CCC_part<-substr(jamo,l+1,l+2)
       for (m in 1:nrow(criteria_DoubleCoda)){
@@ -179,6 +180,7 @@ applyRulesToHangul <- function(data,
           cv<-sub("CCC","CC",cv)
         }
       }
+    }
     }
     # 이상 CCC ->CC 해결
     # 아래 부분은 단어 끝에 나오는 자음연쇄(겹받침)의 음가를, 마치 뒤에 자음이 이어지는 것처럼 정해줌
@@ -288,7 +290,7 @@ applyRulesToHangul <- function(data,
     }
   }
   
-  # 마지막으로 음성작용인 intervocalic voicing 적용
+  # 음성작용인 intervocalic voicing 적용
   if (grepl("v", rules) && convention == "ipa"){
     sonorants = c("n","l","ŋ","m")
     cv_split = unlist(strsplit(cv, split=''))
@@ -307,8 +309,26 @@ applyRulesToHangul <- function(data,
     
   }
   
-  
+  # 수의작용인 non-coronalization 적용
+  if (grepl("o", rules) && convention == "ipa"){
+    velars = c("ɡ","k","k*","kʰ")
+    bilabials = c("b","p","p*","pʰ","m")
+    non_velar_nasals = c('m','n')
+    for(j in 1:length(jamo)){
+      
+      if(jamo[j] %in% non_velar_nasals && !is.na(jamo[j+1])){
+        if(jamo[j+1] %in% velars){
+          jamo[j] <- "ŋ"
+        } else if(jamo[j+1] %in% bilabials){
+          jamo[j] <- "m"
+        }
+      }
+    }
+    rm(velars, bilabials, non_velar_nasals)
+    
+  }
   
   output <- paste(jamo, collapse="")
+
   return(output)
 }
