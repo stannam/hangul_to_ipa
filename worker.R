@@ -119,17 +119,20 @@ applyRulesToHangul <- function(data,
         stop("Must enter a column name for wordforms ('entry' by default).")
       }
       list.data <- as.list(data[[entry]])
-      surface <- rapply(list.data, applyRulesToHangul, entry = entry, rules = rules)
-      surface <- matrix(surface)
-      data[["surface"]] <- surface
+      surface <- rapply(list.data, 
+                        applyRulesToHangul, 
+                        entry = entry, 
+                        rules = rules,
+                        convention = convention)
+      surface <- as.vector(surface)
+      data[["output"]] <- surface
       result <- data
       return(result)
     } else stop("Please input a character, data.frame or tbl object.")
   }
   rules <-tolower(rules)
-  if(!grepl("p",rules)){
-    jamo <- toJamo(data, removeEmptyOnset = T)
-  } else {
+  jamo <- toJamo(data, removeEmptyOnset = T)
+  if(grepl("p",rules) && grepl("ㅣ", jamo)){
     criteria_DoubleCoda <- read_csv(file=here::here('stable','double_coda.csv'), show_col_types = FALSE)
     syllable <- convertHangulStringToJamos(data)
     for (j in 1:length(syllable)) {
@@ -154,32 +157,30 @@ applyRulesToHangul <- function(data,
     rm(criteria_DoubleCoda, syllable, phonemic, DC)
   }
   
-  if(grepl("a",rules)){
+  if(grepl("a",rules) && grepl("ㅎ",jamo)){
     criteria_Aspiration <- read_csv(file=here::here('stable','aspiration.csv'), show_col_types = FALSE)
-    if(grepl("ㅎ",jamo)){
-      for (l in 1:nrow(criteria_Aspiration)){
-        if(grepl(criteria_Aspiration$from[l],jamo)){
-          jamo <- sub(criteria_Aspiration$from[l], criteria_Aspiration$to[l], jamo)
-        }
+    for (l in 1:nrow(criteria_Aspiration)){
+      if(grepl(criteria_Aspiration$from[l],jamo)){
+        jamo <- sub(criteria_Aspiration$from[l], criteria_Aspiration$to[l], jamo)
       }
     }
     rm(criteria_Aspiration)
   } 
-  
+
   cv <- CV_mark(jamo)
-  
   if(grepl("c",rules)){
     criteria_DoubleCoda <- read_csv(file=here::here('stable','double_coda.csv'), show_col_types = FALSE)
     CCC_location<-unlist(gregexpr("VCCC",cv))
-    if (CCC_location > 0) {
-    for (l in CCC_location){
+    if (any(CCC_location > 0)) {
+    for (l in rev(CCC_location)){
       CCC_part<-substr(jamo,l+1,l+2)
       for (m in 1:nrow(criteria_DoubleCoda)){
         if(grepl(criteria_DoubleCoda$separated[m],CCC_part)){
           jamo<-sub(CCC_part,criteria_DoubleCoda$to[m],jamo)
-          cv<-sub("CCC","CC",cv)
+          cv<-sub(substr(cv,l+1,l+2),"CC",cv)
         }
       }
+      rm(CCC_part)
     }
     }
     # 이상 CCC ->CC 해결
@@ -192,7 +193,7 @@ applyRulesToHangul <- function(data,
         }
       }
     }
-    rm(criteria_DoubleCoda, CCC_location, CCC_part)
+    rm(criteria_DoubleCoda, CCC_location)
   }
   
   if(grepl("s",rules)){
@@ -204,7 +205,7 @@ applyRulesToHangul <- function(data,
     }
     rm(criteria_Assimilation)
   }
-  
+
   if(grepl("t",rules)){
     criteria_Tensification <- read_csv(file=here::here('stable','tensification.csv'), show_col_types = FALSE)
     for (l in 1:nrow(criteria_Tensification)){

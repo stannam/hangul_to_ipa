@@ -7,14 +7,13 @@ Usage: app.R
 library(dash)
 library(here)
 library(jsonlite)
-library(utf8)
 suppressPackageStartupMessages(library(plotly))
 suppressPackageStartupMessages(library(tidyverse))
 
 ## load workers
 source(here::here("worker.R"))
 
-## behind the scene
+## behind the scene: list of rules and rule codes + greeting words
 all_rules <- list(
   'ipa' = list(c("Palatalization 구개음화 (e.g., mɑt-i → mɑdʒi 'the eldest child')\n","p"),
                c("Aspiration 격음화 (e.g., pukhɑn → pukʰɑn 'North Korea')\n","a"),
@@ -53,9 +52,9 @@ div_header <- dash::div(
   style = list(
     backgroundColor = '#282b48', 
     textAlign = 'center',
+    padding = '5px 0',
     color = 'white',
-    margin = 5,
-    marginTop = 0
+    height = '100px'
   )
 )
 
@@ -72,23 +71,24 @@ div_side <- dash::div(
     dash::br(),
     
     # fileIO interface (upload wordlist and download results)
-    ## html$label("Or, upload a wordlist as a .txt file. Make sure to set parameters below before uploading a file!"),
-    ## dccUpload(id='upload-file', 
-    ##          children=dash::div(list('Drag and Drop or ', dash::a('Select File'))),
-    ##          style=list('width'='80%',
-    ##                     'height' = '60px',
-    ##                     'lineHeight'='60px',
-    ##                     'borderWidth'= '1px',
-    ##                     'borderStyle'= 'dashed',
-    ##                     'borderRadius'= '5px',
-    ##                     'textAlign'= 'center',
-    ##                     'margin'= '10px'),
-    ##          multiple=TRUE # does not allow uploading multiple files
-    ##          ),
-    ## dash::br(),
-    ## dash::br(),
+    html$label("Or, upload a wordlist as a text file (e.g., .txt or .csv). Make sure to set parameters below before uploading a file!"),
+    dccUpload(id='upload-file', 
+            children=dash::div(list('Drag and Drop or ', dash::a('Select File'))),
+            style=list('width'='80%',
+                       'height' = '60px',
+                       'lineHeight'='60px',
+                       'borderWidth'= '1px',
+                       'borderStyle'= 'dashed',
+                       'borderRadius'= '5px',
+                       'textAlign'= 'center',
+                       'margin'= '10px'),
+            multiple=FALSE # does not allow uploading multiple files
+            ),
+    dash::a(dash::button('Refresh data'),href='/'),
+    dash::br(),
+    dash::br(),
     dash::p("You can choose to apply all or some phonological rules.
-        Click the link below for details"),
+        Check out the link below for details"),
     dash::a('[Readme]', href='https://github.com/stannam/hangul_to_ipa#readme',target='_blank'),
     dash::br(),
     html$hr(),
@@ -117,14 +117,17 @@ div_side <- dash::div(
 
 div_res <- dash::div(
   list(
+    dash::h2('Textbox results'),
     div(id = 'input'),
     div(id = 'output'),
     dash::br(),
     dash::br(),
-    dash::br(),
-    dash::br(),
-    div(id='output-df')
-  ), style = list('margin-left' = '10px'))
+    dash::dccLoading(children=list(dash::div(id='output-df', 
+                                             style = list(width='80%'))),
+                     type='default',
+                     color='#282b48')
+  ), style = list('margin-left' = '10px',
+                  'width'='50%'))
 
 # 2. Create Dash instance
 app <- Dash$new()
@@ -214,44 +217,71 @@ app$callback(
 
 
 # File IO: If .txt uploaded, run the worker and throw a text file back.
-## app$callback(
-##   output('output-df', 'children'),
-##   param = list(input('upload-file','contents'),
-##                input('rules-checkbox','value'),
-##                input('conventions-radio', 'value')),
-##   function(inputfile, rule_selection, convention){
-##     if(!is.null(unlist(inputfile))){
-##       content_string = base64_dec(strsplit(unlist(inputfile),split=',')[[1]][2])
-##       decoded = rawToChar(content_string)
-##       df = read.csv(text=decoded, header=FALSE)
-##       if(nrow(df) < ncol(df)){
-##         df <- t(df)
-##       }
-##       for(coln in 1:ncol(df)){
-##         determin = df[1,coln]
-##         if(is.na(as.numeric(determin))){
-##           process_this = df %>% select(coln)
-##           colnames(process_this) <- "entry"
-##           process_this <- head(process_this,100)
-##           break
-##         }
-##       }
-##       rules_chr = paste(unlist(rule_selection),collapse='')
-##       res = applyRulesToHangul(data = process_this,
-##                                rules = rules_chr,
-##                                convention = convention)
-##       browser()
-##       
-##       return(
-##         res
-##       )
-##     }
-##     
-##     
-##   }
-## )
+app$callback(
+ output('output-df', 'children'),
+ param = list(input('upload-file','contents'),
+              input('rules-checkbox','value'),
+              input('conventions-radio', 'value')),
+ function(inputfile, rule_selection, convention){
+   if(!is.null(unlist(inputfile))){
+     try({
+       content_string = base64_dec(strsplit(unlist(inputfile),split=',')[[1]][2])
+       decoded = rawToChar(content_string)
+       df = read.csv(text=decoded, header=FALSE)
+       if(nrow(df) < ncol(df)){
+         df <- t(df)
+         df <- data.frame(df)
+       }
+       for(coln in 1:ncol(df)){
+         determin = df[1,coln]
+         if(is.na(as.numeric(determin))){
+           process_this = df %>% select(coln)
+           colnames(process_this) <- "entry"
+           process_this <- head(process_this,100)
+           break
+         }
+       }
+       rules_chr = paste(unlist(rule_selection),collapse='')
+       res = applyRulesToHangul(data = process_this,
+                                rules = rules_chr,
+                                convention = convention)
+       return(
+         list(html$hr(),
+              dash::h2('Batch results (max 100 items)'),
+              dash::br(),
+              dash::dashDataTable(data=df_to_list(res), 
+                                  style_table=list(
+                                    maxHeight='500px',
+                                    overflowY='scroll',
+                                    maxWidth='800px'
+                                  ),
+                                  style_cell=list(
+                                    maxWidth='80%'
+                                  ),
+                                  export_format='xlsx',
+                                  export_headers='display',
+                                  style_as_list_view=TRUE)
+         )
+         
+         
+       )
+       
+     })
+     return(
+       list(html$hr(),
+            dash::h2('Batch results (max 100 items)'),
+            dash::p("Your file can't be parsed.\n
+                    Please make sure your file is a comma-delimited text file.")
+       )
+            
+     )
+   }
+   
+   
+ }
+)
 
 # 4. Run app, change for deploy online
-## app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
+app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
 
-app$run_server(debug = T)  ## local debugging
+## app$run_server(debug = T)  ## local debugging
