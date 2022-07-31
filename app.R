@@ -21,9 +21,10 @@ all_rules <- list(
                c("Manner assimilation 음운동화 (i.e., Obstruent nasalisation, Liquid nasalisation and Lateralisation)\n","s"),
                c("Post-obstruent tensification (e.g., pɑksu → pɑks*u 'hand clap')\n","t"),
                c("Coda neutralization 음절말 장애음 중화 (e.g., bitɕʰ / bitɕ / bis → bit 'light / debt / hair comb')\n","n"),
-               c("Intervocalic H-deletion 모음사이 'ㅎ' 삭제 (e.g., sʌnho → sʌno 'preference')\n","h"),
-               c("Intervocalic obstruent voicing 장애음 유성음화 (e.g., tɕikɑk → tɕiɡɑk 'being late')\n","v"),
-               c("Optional non-coronalization 수의적 조음위치동화 (e.g., hɑnkɯl → hɑŋɡɯl 'the Korean alphabet')\n","o")
+               c("(Optional) intervocalic H-deletion 모음사이 'ㅎ' 삭제 (e.g., sʌnho → sʌno 'preference')\n","h"),
+               c("(Optional) non-coronalization 수의적 조음위치동화 (e.g., hɑnkɯl → hɑŋɡɯl 'the Korean alphabet')\n","o"),
+               c("(Phonetic) intervocalic obstruent voicing 장애음 유성음화 (e.g., tɕikɑk → tɕiɡɑk 'being late')\n","v"),
+               c("(Phonetic) liquid alternation [l ~ ɾ] (e.g., tʰɑlɑk → tʰɑɾɑk 'depravity')\n","r")
                ),
   'yale' = list(c('High vowel neutralization (i.e., High vowels must be unrounded after a bilabial)','u'))
 )

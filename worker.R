@@ -132,7 +132,7 @@ applyRulesToHangul <- function(data,
   }
   rules <-tolower(rules)
   jamo <- toJamo(data, removeEmptyOnset = T)
-  if(grepl("p",rules) && grepl("ㅣ", jamo)){
+  if(grepl("p",rules) && (grepl("ㄷㅣ", jamo) || grepl("ㅌㅣ", jamo))){
     criteria_DoubleCoda <- read_csv(file=here::here('stable','double_coda.csv'), show_col_types = FALSE)
     syllable <- convertHangulStringToJamos(data)
     for (j in 1:length(syllable)) {
@@ -307,7 +307,21 @@ applyRulesToHangul <- function(data,
       }
     }
     rm(sonorants, cv_split)
-    
+  }
+  
+  # 음성작용인 liquid alternation 적용
+  if (grepl("r", rules) && convention == "ipa" && 'l' %in% jamo){
+    cv_split = unlist(strsplit(cv, split=''))
+    liquid_location <- grep("l",jamo)
+    liquid_location <- liquid_location[liquid_location < length(jamo)]
+    if (any(liquid_location > 0)) {
+      for (l in liquid_location[liquid_location > 1]){
+        if (cv_split[l-1] == "V" && cv_split[l+1] == "V"){
+          jamo[l] <- "ɾ"
+        }
+      }
+    }
+    rm(cv_split, liquid_location)
   }
   
   # 수의작용인 non-coronalization 적용
