@@ -19,11 +19,11 @@ This program does not apply most rules that are sensitive to morphological or ot
 
 <img src= "https://user-images.githubusercontent.com/43150234/182013575-e9e20f45-38d8-40c6-8dc4-b673fba2836a.png" width=50% />
 
- 1. Select either 'IPA Transcription' or 'Yale Romanization.' Yale Romanization transliterates the spelling, so phonological rules are irrelevant. With IPA Transcription, on the other hand, you can choose to apply all or some phonological rules. See below for phonological rules implemented in this program.
+ 2. Select either 'IPA Transcription' or 'Yale Romanization.' Yale Romanization transliterates the spelling, so phonological rules are irrelevant. With IPA Transcription, on the other hand, you can choose to apply all or some phonological rules. See below for phonological rules implemented in this program.
 
 <img src= "https://user-images.githubusercontent.com/43150234/182013839-1e3fa277-2478-46af-a2c7-bb9f86c67b35.png" width=50% />
 
- 1. You can also upload a text file and get it transcribed/transliterated. The file should be column-delimited. Here are example files [file1](https://blog.kakaocdn.net/dn/dIRnEk/btrIADmZAEY/F24hptgcGcmqeKFMFA2Yr0/가로예시.txt?attach=1&knm=tfile.txt) [file2](https://blog.kakaocdn.net/dn/bV4ktG/btrIBUa5fGe/tZnsSpYrUwPUGGv45ZkZAk/세로예시.txt?attach=1&knm=tfile.txt)
+ 3. You can also upload a text file and get it transcribed/transliterated. The file should be column-delimited. Here are example files [file1](https://blog.kakaocdn.net/dn/dIRnEk/btrIADmZAEY/F24hptgcGcmqeKFMFA2Yr0/가로예시.txt?attach=1&knm=tfile.txt) [file2](https://blog.kakaocdn.net/dn/bV4ktG/btrIBUa5fGe/tZnsSpYrUwPUGGv45ZkZAk/세로예시.txt?attach=1&knm=tfile.txt)
 
 ## Inventory
 ### Consonants
