@@ -4,10 +4,9 @@ A dash app that transcribes 한글 into [hɑŋɡɯl].
 **Enter 한글, get [hɑŋɡɯl].**
 **Click [here](https://hangul-to-ipa.herokuapp.com/) to use.**
 
-This web app applies phonological rules to Korean orthographic forms (Hangul/Hangeul/한글) and transcribe them into IPA. It automatically applies phonological rules from [Shin, Kiaer, and Cha (2012) Ch. 8](https://doi.org/10.1017/CBO9781139342858.010). These are rules related to surface phonotactics and syllable structure constraints. The R implementation is motivated by '[hangul converter](https://github.com/stannam/KPNN/blob/master/hangul_converter.r),' a part of KPNN. 
+This web app applies phonological rules to Korean orthographic forms (Hangul/Hangeul/한글) and transcribe them into IPA. It automatically applies phonological rules from [Shin, Kiaer, and Cha (2012) Ch. 8](https://doi.org/10.1017/CBO9781139342858.010). These are rules related to surface phonotactics and syllable structure constraints. The R implementation is motivated by '[hangul converter](https://github.com/stannam/KPNN/blob/master/hangul_converter.r),' a part of KPNN. A similar database of Korean surface forms is available as K-SPAN by [Holliday, Turnbull and Eychenne (2017)](https://link.springer.com/article/10.3758/s13428-016-0836-8), though they do not provide on-the-spot transcription.
 
-
-Additionally, it transliterates Korean orthography in accordance with the Yale Romanization of Korean, a convention widely used in Korean linguistics. See Martin, Samuel E. (1992). A Reference Grammar of Korean. for details.
+In addition to automatic transcription, this program also transliterates Korean orthography in accordance with the Yale Romanization of Korean, a convention widely used in Korean linguistics. See Martin, Samuel E. (1992). A Reference Grammar of Korean. for details.
 
 
 This program does not apply most rules that are sensitive to morphological or other extra-phonological information. Therefore, it works best with monomorphemic words and may not produce reliable outputs otherwise. For instance, Compensatory Vowel Lengthening, Vowel Deletion, Glide Formation, and others cannot be implemented without morphological information. Likewise, /n/-Insertion and /l/-Tensification need etymological information.
