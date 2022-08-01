@@ -8,6 +8,7 @@ jajeon <- jajeon <- read.csv(file=here::here("stable","hanja.tsv"),
 
 intToHan <- function(han_int){
   split_han <- unlist(strsplit(han_int,split=""))
+  length_han <- length(split_han)
   sep_loc <- grep("\\+",split_han)
   han_int <- tolower(paste0(split_han[(sep_loc+1):length_han],collapse=""))
   han_int <- paste0("0x",han_int,collapse="")
