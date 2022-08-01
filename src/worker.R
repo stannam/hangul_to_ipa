@@ -1,58 +1,21 @@
 library(pbapply)
 library(tidyverse)
 
-GA_CODE = 44032 # The unicode representation of the Korean syllabic orthography starts with GA_CODE
-G_CODE = 12593 # The unicode representation of the Korean phonetic (jamo) orthography starts with G_CODE
-ONSET = 588
-CODA = 28
-
-# ONSET LIST. 00 -- 18
-ONSET_LIST = c('ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ')
-
-# VOWEL LIST. 00 -- 20
-VOWEL_LIST = c('ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ',
-              'ㅣ')
-
-# CODA LIST. 00 -- 27 + 1 (1 for open syllable)
-CODA_LIST = c('', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ',
-             'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ')
+source(here::here("src","hangul_tools.R"))
 
 
-
-
-convertHangulStringToJamos <- function(word){
-  split_word = unlist(strsplit(word,split=''))
-  output = list()
-
-  for (letter in split_word){
-    syllable = ""
-    if (!all(is.na(str_match(letter, "[가-힣]")))){  # run this only for a Korean character
-      chr_code = utf8ToInt(letter) # returns the integer representing an Unicode character
-      chr_code = chr_code - GA_CODE
-      
-      if (chr_code < 0){
-        syllable <- paste0(letter)
-      }
-      
-      onset <- floor(chr_code / ONSET)
-      vowel <- floor((chr_code - (ONSET * onset)) / CODA)
-      coda <- floor((chr_code - (ONSET * onset) - (CODA * vowel)))
-      
-      
-      syllable <- paste0(ONSET_LIST[onset+1], VOWEL_LIST[vowel+1], CODA_LIST[coda+1])
-      
-    } else {
-      syllable <- paste0(letter)
-      
-    }
-    output <- append(output, syllable)
+sanitize <- function(word) {
+  syllables <- unlist(strsplit(word,split=""))
+  while(syllables[1]==" "){syllables <- syllables[2:length(syllables)]}
+  hanja_loc <- grepl("[\\p{Han}]", syllables, perl=T)
+  if(any(hanja_loc)){
+    source(here::here("src","hanja_tools.R"))
+    word <- hanja_cleaner(syllables, hanja_loc)
+  } else{
+    word <- paste(syllables,collapse="")
   }
-
-  output <- unlist(output)
   
-  return(output)
-  
-  
+  return(word)
 }
 
 toJamo <- function(data, removeEmptyOnset = TRUE, sboundary = FALSE) {
@@ -102,7 +65,6 @@ applyRulesToHangul <- function(data,
                                entry = "entry", 
                                rules = "pacstnhv",
                                convention = "ipa"){
-  
   # 규칙의 종류와 순서
   # (P)alatalization: 구개음화 (맏이 -> 마지)
   # (A)spiration: 격음화 (북한 -> 부칸)
@@ -130,7 +92,9 @@ applyRulesToHangul <- function(data,
       return(result)
     } else stop("Please input a character, data.frame or tbl object.")
   }
-  rules <-tolower(rules)
+  rules <- tolower(rules)
+
+  data <- sanitize(data)  # the function 'sanitize' converts all Hanja into hangul and removes string initial spaces
   jamo <- toJamo(data, removeEmptyOnset = T)
   if(grepl("p",rules) && (grepl("ㄷㅣ", jamo) || grepl("ㅌㅣ", jamo))){
     criteria_DoubleCoda <- read_csv(file=here::here('stable','double_coda.csv'), show_col_types = FALSE)
@@ -168,6 +132,7 @@ applyRulesToHangul <- function(data,
   } 
 
   cv <- CV_mark(jamo)
+  
   if(grepl("c",rules)){
     criteria_DoubleCoda <- read_csv(file=here::here('stable','double_coda.csv'), show_col_types = FALSE)
     CCC_location<-unlist(gregexpr("VCCC",cv))
@@ -176,8 +141,8 @@ applyRulesToHangul <- function(data,
       CCC_part<-substr(jamo,l+1,l+2)
       for (m in 1:nrow(criteria_DoubleCoda)){
         if(grepl(criteria_DoubleCoda$separated[m],CCC_part)){
-          jamo<-sub(CCC_part,criteria_DoubleCoda$to[m],jamo)
-          cv<-sub(substr(cv,l+1,l+2),"CC",cv)
+          jamo <- paste(substr(jamo,1,l),criteria_DoubleCoda$to[m],substr(jamo,l+3,nchar(jamo)),sep="")
+          cv <- paste(substr(cv,1,l),"C",substr(cv,l+3,nchar(cv)),sep="")
         }
       }
       rm(CCC_part)
@@ -199,7 +164,7 @@ applyRulesToHangul <- function(data,
   if(grepl("s",rules)){
     criteria_Assimilation <- read_csv(file=here::here('stable','assimilation.csv'), show_col_types = FALSE)
     for (l in 1:nrow(criteria_Assimilation)){
-      if(grepl(criteria_Assimilation$from[l],jamo)){
+      while(grepl(criteria_Assimilation$from[l],jamo)){
         jamo <- sub(criteria_Assimilation$from[l],criteria_Assimilation$to[l],jamo)
       }
     }
@@ -209,7 +174,7 @@ applyRulesToHangul <- function(data,
   if(grepl("t",rules)){
     criteria_Tensification <- read_csv(file=here::here('stable','tensification.csv'), show_col_types = FALSE)
     for (l in 1:nrow(criteria_Tensification)){
-      if(grepl(criteria_Tensification$from[l],jamo)){
+      while(grepl(criteria_Tensification$from[l],jamo)){
         jamo <- sub(criteria_Tensification$from[l],criteria_Tensification$to[l],jamo)
       }
     }

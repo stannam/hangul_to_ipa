@@ -11,7 +11,7 @@ suppressPackageStartupMessages(library(plotly))
 suppressPackageStartupMessages(library(tidyverse))
 
 ## load workers
-source(here::here("worker.R"))
+source(here::here("src","worker.R"))
 
 ## behind the scene: list of rules and rule codes + greeting words
 all_rules <- list(
@@ -38,7 +38,8 @@ sample_pool <- c("안녕하세요", "너는 음운론이 좋니?",  # random sen
                  "툭하면",  # aspiration
                  "박수", # Post-obstruent tensification
                  "만화", # optional h-deletion
-                 "한글", "감기", "신문" # optional non-coronalization
+                 "한글", "감기", "신문", # optional non-coronalization
+                 "綠色", "青龍", "不動産", "不可", "不實" # chinese characters example
                  )  
 sample_word <- sample(sample_pool,1)# the first word that is randomly presented to the user
 
@@ -285,4 +286,4 @@ app$callback(
 # 4. Run app, change for deploy online
 app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
 
-## app$run_server(debug = T)  ## local debugging
+app$run_server(debug = T)  ## local debugging
