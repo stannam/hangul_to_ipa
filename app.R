@@ -133,6 +133,32 @@ div_res <- dash::div(
 
 # 2. Create Dash instance
 app <- Dash$new()
+app$index_string('<!DOCTYPE html>
+<html>
+ <head>
+     <title>한글 to IPA</title>
+ </head>
+  <body>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9486107513119960"
+     crossorigin="anonymous"></script>
+<!-- in_webapp -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-9486107513119960"
+     data-ad-slot="1864663043"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    {%app_entry%}
+    <footer>
+     {%config%}
+     {%scripts%}
+    </footer>
+  </body>
+</html>')
 
 # 3. Specify App layout
 app$layout(
@@ -284,6 +310,6 @@ app$callback(
 )
 
 # 4. Run app, change for deploy online
-app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
+#app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
 
 app$run_server(debug = T)  ## local debugging
