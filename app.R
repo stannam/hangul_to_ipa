@@ -136,7 +136,7 @@ app <- Dash$new()
 app$index_string('<!DOCTYPE html>
 <html>
  <head>
-     <title>한글 to IPA</title>
+     <title>Hangul to IPA</title>
  </head>
   <body>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9486107513119960"
