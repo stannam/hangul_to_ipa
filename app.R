@@ -158,8 +158,6 @@ app <- Dash$new()
 app$index_string('<!DOCTYPE html>
 <html>
  <head>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9486107513119960"
-     crossorigin="anonymous"></script>
      <title>Hangul to IPA</title>
  </head>
   <body>
@@ -332,6 +330,6 @@ app$callback(
 )
 
 # 4. Run app, change for deploy online
-#app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
+app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
 
 app$run_server(debug = T)  ## local debugging
