@@ -129,7 +129,7 @@ div_res <- dash::div(
                      type='default',
                      color='#282b48')
   ), style = list('margin-left' = '10px',
-                  'width'='40%'))
+                  'width'='40%')
 )
 
 
