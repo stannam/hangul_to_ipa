@@ -130,26 +130,6 @@ div_res <- dash::div(
                      color='#282b48')
   ), style = list('margin-left' = '10px',
                   'width'='40%'))
-div_footer <- dash::div(
-  list(
-    dash::h2('Transcription of 한글'),
-    dash::p('한글 (Hangul or Hangeul) is the writing system which is natively used to transcribe the Korean language. Unsurprisingly, Korean speakers generally do not rely on other writing systems. Using Chinese characters is not the norm among the speakers, let alone the Roman alphabet. However, when used for linguistic research of Korean, there are two obvious downsides in Hangul. First, not all of the international audience recognize Hangul. Second, Hangul is a syllabic system, meaning that sub-syllabic transcription does not always go hand in hand with Hangul.'),
-    dash::p('Therefore, researchers need a means of converting Hangul characters. Hangul phonemically represents all Monomorphemic words in Korean, which means there is a fairly reliable correspondence between each component of Hangul and the International Phonetic Alphabet.'),
-    dash::p('The target audience is researchers in Korean linguistics who may find it tedious to blindly translate one phonemic system (i.e., Hangul) to another. The original motivation for this web application was to automatically convert 한글 into IPA symbols, e.g., [hɑŋɡɯl], hence the name. However, it also includes the function of converting Hangul to the Yale Romanization system. The Yale system is the convention used by researchers in English-speaking countries. Other romanization conventions include the Revised Romanization of Korean (RR), McCune-Reischauer (MR), and Romanization of Korean (RK). RR is the standard in South Korea and the K-pop fandom. For non-Yale romanization systems, please refer to the following:'),
-    dash::a('Korean Romanization Converter', href='http://roman.cs.pusan.ac.kr/input_eng.aspx', target='_blank'),
-    dash::h2('Phonological rules in Korean'),
-    dash::p('This web app is an automaton that blindly applies SPE-styled phonological rules to an underlying form. The Hangul input is assumed to be a faithful representation of the underlying representation. These rules are not sensitive to an extra-phonological environment. Therefore, the results of the app can differ a lot from the actual pronunciation. Take this as a disclaimer!! For reference on the rules applied in this app, please see Shin, Kiaer, and Cha (2012) Ch. 8.'),
-    dash::a('Shin, J., Kiaer, J., & Cha, J. (2012). Phonological rules of Korean (I). In The Sounds of Korean (pp. 178-198). Cambridge: Cambridge University Press.', href='https://doi.org/10.1017/CBO9781139342858.010', target='_blank'),
-    dash::p('K-SPAN (Holliday, Turnbull, and Eychenne 2017) is a similar but quite different resource on applying phonological rules to Korean words. The difference is that this web app allows Hangul non-words. You can even enter something like ㅋㅋㅋㅋ.'),
-    dash::a('Holliday, J.J., Turnbull, R. & Eychenne, J. (2017). K-SPAN: A lexical database of Korean surface phonetic forms and phonological neighborhood density statistics. Behav Res 49, 1939–1950.', href='https://doi.org/10.3758/s13428-016-0836-8', target='_blank')
-  ),
-  style = list(
-    backgroundColor = '#97D4E9', 
-    textAlign = 'left',
-    padding = '5px 0',
-    color = '002145'
-  )
-  
 )
 
 
@@ -186,8 +166,7 @@ app$layout(
           div_res
         ), style=list('display'='flex',
                       'font-family'='Arial, Helvetica, sans-serif')
-      ),
-      div_footer
+      )
     )
   )
 )
@@ -317,6 +296,6 @@ app$callback(
 )
 
 # 4. Run app, change for deploy online
-#app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
+app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
 
 app$run_server(debug = T)  ## local debugging
