@@ -114,7 +114,7 @@ div_side <- dash::div(
   ), style = list('background-color'='lightgrey', 
                   'columnCount'=1, 
                   'white-space'='pre-line',
-                  'width'= '50%')
+                  'width'= '60%')
 )
 
 div_res <- dash::div(
@@ -125,11 +125,11 @@ div_res <- dash::div(
     dash::br(),
     dash::br(),
     dash::dccLoading(children=list(dash::div(id='output-df', 
-                                             style = list(width='80%'))),
+                                             style = list(width='100%'))),
                      type='default',
                      color='#282b48')
   ), style = list('margin-left' = '10px',
-                  'width'='50%'))
+                  'width'='40%'))
 div_footer <- dash::div(
   list(
     dash::h2('Transcription of 한글'),
@@ -161,19 +161,6 @@ app$index_string('<!DOCTYPE html>
      <title>Hangul to IPA</title>
  </head>
   <body>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9486107513119960"
-     crossorigin="anonymous"></script>
-<!-- in_webapp -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-9486107513119960"
-     data-ad-slot="1864663043"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
     {%app_entry%}
     <footer>
      {%config%}
@@ -330,6 +317,6 @@ app$callback(
 )
 
 # 4. Run app, change for deploy online
-app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
+#app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
 
 app$run_server(debug = T)  ## local debugging
