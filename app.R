@@ -68,7 +68,8 @@ div_side <- dash::div(
     dash::br(),
     
     # textbox interface
-    dccInput(id = 'text_input',value = sample_word, type = 'text', debounce = TRUE),
+    dccInput(id = 'text_input', value = sample_word, type = 'text', debounce = TRUE),
+    dash::button('Convert'),
     dash::br(),
     dash::br(),
     
@@ -238,8 +239,9 @@ app$callback(
  output('output-df', 'children'),
  param = list(input('upload-file','contents'),
               input('rules-checkbox','value'),
-              input('conventions-radio', 'value')),
- function(inputfile, rule_selection, convention){
+              input('conventions-radio', 'value'),
+              input('text_input', 'value')),
+ function(inputfile, rule_selection, convention, tarak){
    if(!is.null(unlist(inputfile))){
      try({
        content_string = base64_dec(strsplit(unlist(inputfile),split=',')[[1]][2])
@@ -254,7 +256,9 @@ app$callback(
          if(is.na(as.numeric(determin))){
            process_this = df %>% select(coln)
            colnames(process_this) <- "entry"
-           process_this <- head(process_this,100)
+           if(tarak != "타락"){  # unlimited ipa conversion if textbox = 타락
+             process_this <- head(process_this,100)
+           }
            break
          }
        }
@@ -298,4 +302,6 @@ app$callback(
 # 4. Run app, change for deploy online
 app$run_server(host = '0.0.0.0', port = Sys.getenv('PORT', 8050))
 
-app$run_server(debug = T)  ## local debugging
+## local debugging
+# app$run_server(host = '127.0.0.1', port = Sys.getenv('PORT', 8050))
+# app$run_server(debug = T)

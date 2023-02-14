@@ -5,6 +5,10 @@ source(here::here("src","hangul_tools.R"))
 
 
 sanitize <- function(word) {
+  if(nchar(word < 1)){  # if empty input, no sanitize
+    return(word)
+  }
+  
   syllables <- unlist(strsplit(word,split=""))
   while(syllables[1]==" "){syllables <- syllables[2:length(syllables)]}
   hanja_loc <- grepl("[\\p{Han}]", syllables, perl=T)
@@ -78,7 +82,7 @@ applyRulesToHangul <- function(data,
   if (class(data)[1]!="character") {
     if (any(class(data)=="data.frame")){
       if (is.null(data[[entry]])){
-        stop("Must enter a column name for wordforms ('entry' by default).")
+        stop("Please specify a value for 'entry' parameter (a column name for wordforms). Default = 'entry'")
       }
       list.data <- as.list(data[[entry]])
       surface <- rapply(list.data, 
@@ -92,6 +96,11 @@ applyRulesToHangul <- function(data,
       return(result)
     } else stop("Please input a character, data.frame or tbl object.")
   }
+  
+  if(nchar(data) < 1){  # if no content, then return no content
+    return("")
+  }
+  
   rules <- tolower(rules)
 
   data <- sanitize(data)  # the function 'sanitize' converts all Hanja into hangul and removes string initial spaces
@@ -130,7 +139,11 @@ applyRulesToHangul <- function(data,
     }
     rm(criteria_Aspiration)
   } 
-
+  
+  if(nchar(jamo) < 1){
+    return("")
+  }
+  
   cv <- CV_mark(jamo)
   
   if(grepl("c",rules)){
