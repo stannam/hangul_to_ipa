@@ -11,7 +11,7 @@ suppressPackageStartupMessages(library(plotly))
 suppressPackageStartupMessages(library(tidyverse))
 
 ## load workers
-source(here::here("src","worker.R"))
+eval(parse(file=here::here("src","worker.R"), encoding="UTF-8"))
 
 ## behind the scene: list of rules and rule codes + greeting words
 all_rules <- list(

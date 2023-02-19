@@ -1,4 +1,4 @@
-source(here::here("src","hangul_tools.R"))
+eval(parse(file=here::here("src","hangul_tools.R"), encoding="UTF-8"))
 highV_diphthongs <- c("ㅑ","ㅕ","ㅖ","ㅛ","ㅠ","ㅣ")
 
 # import a 漢字 - 한글 conversion table

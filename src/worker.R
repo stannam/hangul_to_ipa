@@ -1,7 +1,7 @@
 library(pbapply)
 library(tidyverse)
 
-source(here::here("src","hangul_tools.R"))
+eval(parse(file=here::here("src","hangul_tools.R"), encoding="UTF-8"))
 
 
 sanitize <- function(word) {
@@ -13,7 +13,7 @@ sanitize <- function(word) {
   while(syllables[1]==" "){syllables <- syllables[2:length(syllables)]}
   hanja_loc <- grepl("[\\p{Han}]", syllables, perl=T)
   if(any(hanja_loc)){
-    source(here::here("src","hanja_tools.R"))
+    eval(parse(file=here::here("src","hanja_tools.R"), encoding="UTF-8"))
     word <- hanja_cleaner(syllables, hanja_loc)
   } else{
     word <- paste(syllables,collapse="")
