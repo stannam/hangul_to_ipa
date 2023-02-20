@@ -1,6 +1,22 @@
 library(pbapply)
 library(tidyverse)
 
+# global variables
+read_csv_resource <- function(file_name){
+return (read_csv(file=here::here('stable',file_name), show_col_types = FALSE))
+}
+
+criteria_DoubleCoda <- read_csv_resource('double_coda.csv')
+roman_ipa <- read_csv_resource('ipa.csv')
+roman_yale <- read_csv_resource('yale.csv')
+criteria_DoubleCoda <- read_csv_resource('double_coda.csv')
+neutral <- read_csv_resource('neutralization.csv')
+criteria_Tensification <- read_csv_resource('tensification.csv')
+criteria_Assimilation <- read_csv_resource('assimilation.csv')
+criteria_Aspiration <- read_csv_resource('aspiration.csv')
+
+
+# load hangul-unicode interface
 eval(parse(file=here::here("src","hangul_tools.R"), encoding="UTF-8"))
 
 
@@ -24,13 +40,13 @@ sanitize <- function(word) {
 
 toJamo <- function(data, removeEmptyOnset = TRUE, sboundary = FALSE) {
   # Hangul forms to Jamo
-  criteria_DoubleCoda <- read_csv(file=here::here('stable','double_coda.csv'), show_col_types = FALSE)
-
   syllable <- convertHangulStringToJamos(data)
   for (j in 1:length(syllable)) {
     DC <- match(substr(syllable[j],3,3), criteria_DoubleCoda$double)
     if (is.na(DC) == FALSE) {					#겹받침을 둘로 나눔 (eg. "ㄳ" -> "ㄱㅅ")
-      substr(syllable[j], 3, 4) <- as.character(criteria_DoubleCoda$separated[DC])
+      pre_combined <- c(substr(syllable[j], 1, 2), criteria_DoubleCoda$separated[DC])
+      syllable[j] <- paste(pre_combined,collapse='')
+      rm(pre_combined)
     } 
     if (removeEmptyOnset == TRUE){
       phonemic <- unlist(strsplit(syllable[j], split=""))	# 'syllable'의 j번째 element를 각 자모단위로 분리해서 새로운 vector 'phonemic'에 넣습니다.
@@ -51,11 +67,10 @@ toJamo <- function(data, removeEmptyOnset = TRUE, sboundary = FALSE) {
 
 CV_mark <- function(input){
   # This function is for identifying a Jamo as either consonant or vowel.
-  CV_ref <- read_csv(file=here::here('stable','ipa.csv'), show_col_types = FALSE)
   output <- vector()
   phoneme <- unlist(strsplit(input,split=""))
   for (j in 1:length(phoneme)){
-    if (is.na (match (phoneme[j], CV_ref$C)) == TRUE) {
+    if (is.na (match (phoneme[j], roman_ipa$C)) == TRUE) {
       phoneme[j]="V"
     }
     else {phoneme[j]="C"
@@ -100,13 +115,12 @@ applyRulesToHangul <- function(data,
   if(nchar(data) < 1){  # if no content, then return no content
     return("")
   }
-  
+  print(data)
   rules <- tolower(rules)
 
   data <- sanitize(data)  # the function 'sanitize' converts all Hanja into hangul and removes string initial spaces
   jamo <- toJamo(data, removeEmptyOnset = T)
   if(grepl("p",rules) && (grepl("ㄷㅣ", jamo) || grepl("ㅌㅣ", jamo))){
-    criteria_DoubleCoda <- read_csv(file=here::here('stable','double_coda.csv'), show_col_types = FALSE)
     syllable <- convertHangulStringToJamos(data)
     for (j in 1:length(syllable)) {
       DC <- match(substr(syllable[j],3,3), criteria_DoubleCoda$double)
@@ -126,18 +140,14 @@ applyRulesToHangul <- function(data,
     jamo <- gsub("Xㅣ","ㅊㅣ",jamo)
     jamo <- gsub("x","ㄷ",jamo)
     jamo <- gsub("X","ㅌ",jamo)
-    
-    rm(criteria_DoubleCoda, syllable, phonemic, DC)
   }
   
   if(grepl("a",rules) && grepl("ㅎ",jamo)){
-    criteria_Aspiration <- read_csv(file=here::here('stable','aspiration.csv'), show_col_types = FALSE)
     for (l in 1:nrow(criteria_Aspiration)){
       if(grepl(criteria_Aspiration$from[l],jamo)){
         jamo <- sub(criteria_Aspiration$from[l], criteria_Aspiration$to[l], jamo)
       }
     }
-    rm(criteria_Aspiration)
   } 
   
   if(nchar(jamo) < 1){
@@ -147,7 +157,6 @@ applyRulesToHangul <- function(data,
   cv <- CV_mark(jamo)
   
   if(grepl("c",rules)){
-    criteria_DoubleCoda <- read_csv(file=here::here('stable','double_coda.csv'), show_col_types = FALSE)
     CCC_location<-unlist(gregexpr("VCCC",cv))
     if (any(CCC_location > 0)) {
     for (l in rev(CCC_location)){
@@ -171,21 +180,17 @@ applyRulesToHangul <- function(data,
         }
       }
     }
-    rm(criteria_DoubleCoda, CCC_location)
   }
   
   if(grepl("s",rules)){
-    criteria_Assimilation <- read_csv(file=here::here('stable','assimilation.csv'), show_col_types = FALSE)
     for (l in 1:nrow(criteria_Assimilation)){
       while(grepl(criteria_Assimilation$from[l],jamo)){
         jamo <- sub(criteria_Assimilation$from[l],criteria_Assimilation$to[l],jamo)
       }
     }
-    rm(criteria_Assimilation)
   }
 
   if(grepl("t",rules)){
-    criteria_Tensification <- read_csv(file=here::here('stable','tensification.csv'), show_col_types = FALSE)
     for (l in 1:nrow(criteria_Tensification)){
       while(grepl(criteria_Tensification$from[l],jamo)){
         jamo <- sub(criteria_Tensification$from[l],criteria_Tensification$to[l],jamo)
@@ -194,7 +199,6 @@ applyRulesToHangul <- function(data,
   }
   
   if(grepl("n",rules)){
-    neutral <- read_csv(file=here::here('stable','neutralization.csv'), show_col_types = FALSE)
     phoneme <- unlist(strsplit(jamo,split=""))
     for (l in 1:length(phoneme)){
       if(is.na(match(phoneme[l],neutral$from))==FALSE){
@@ -204,7 +208,6 @@ applyRulesToHangul <- function(data,
       }
       jamo <- paste(phoneme,collapse="")
     }
-    rm(neutral)
   }
   
   if(grepl("h",rules)){
@@ -241,9 +244,9 @@ applyRulesToHangul <- function(data,
   
   # 규칙적용 완료. 이하, IPA나 Yale로 변환.
   if (convention == "ipa"){
-    romanization <- read_csv(file=here::here('stable','ipa.csv'), show_col_types = FALSE)
+    romanization <- roman_ipa
   } else if (convention == "yale"){
-    romanization <- read_csv(file=here::here('stable','yale.csv'), show_col_types = FALSE)
+    romanization <- roman_yale
   }
   jamo <- unlist(strsplit(jamo,split=""))
   for (l in 1:length(jamo)){
