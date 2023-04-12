@@ -21,7 +21,7 @@ eval(parse(file=here::here("src","hangul_tools.R"), encoding="UTF-8"))
 
 
 sanitize <- function(word) {
-  if(nchar(word < 1)){  # if empty input, no sanitize
+  if(nchar(word) < 1){  # if empty input, no sanitize
     return(word)
   }
   
