@@ -6,8 +6,9 @@ A dash app that transcribes 한글 into [hɑŋɡɯl].
 
 This web app applies phonological rules to Korean orthographic forms (Hangul/Hangeul/한글) and transcribe them into IPA. It automatically applies phonological rules from [Shin, Kiaer, and Cha (2012) Ch. 8](https://doi.org/10.1017/CBO9781139342858.010). These are rules related to surface phonotactics and syllable structure constraints. The R implementation is motivated by '[hangul converter](https://github.com/stannam/KPNN/blob/master/hangul_converter.r),' a part of KPNN. A similar database of Korean surface forms is available as K-SPAN by [Holliday, Turnbull and Eychenne (2017)](https://link.springer.com/article/10.3758/s13428-016-0836-8), though they do not provide on-the-spot transcription.
 
-In addition to automatic transcription, this program also transliterates Korean orthography in accordance with the Yale Romanization of Korean, a convention widely used in Korean linguistics. See Martin, Samuel E. (1992). A Reference Grammar of Korean. for details.
-
+In addition to automatic transcription, this program:
+ * transliterates Korean orthography in accordance with the Yale Romanization of Korean. The Yale convention is a de facto standard in Korean linguistics. See Martin, Samuel E. (1992). A Reference Grammar of Korean. for details.
+ * transcribes Chinese characters as pronounced in Korean. For example, 不正確 'imprecise' is transcribed as [pudʑʌŋwak]
 
 This program does not apply most rules that are sensitive to morphological or other extra-phonological information. Therefore, it works best with monomorphemic words and may not produce reliable outputs otherwise. For instance, Compensatory Vowel Lengthening, Vowel Deletion, Glide Formation, and others cannot be implemented without morphological information. Likewise, /n/-Insertion and /l/-Tensification need etymological information.
 
@@ -15,7 +16,7 @@ This program does not apply most rules that are sensitive to morphological or ot
 
 <img src= "https://user-images.githubusercontent.com/43150234/182013447-b681125d-95b9-4d32-a755-b5cbe5f5bbda.png" width=50% />
 
- 1. Enter your Korean word (e.g., 국물 'soup', 한국어 'the Korean language', or 음운론 'phonology') in the textbox marked red. The results will return on the right side panel.
+ 1. Enter your Korean word (e.g., 국물 'soup', 韓國語 'the Korean language', or 음운론 'phonology') in the textbox marked red. The results will return on the right side panel.
 
 <img src= "https://user-images.githubusercontent.com/43150234/182013575-e9e20f45-38d8-40c6-8dc4-b673fba2836a.png" width=50% />
 
