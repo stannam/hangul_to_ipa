@@ -262,7 +262,7 @@ applyRulesToHangul <- function(data,
   
   # Yale convention에서 bilabial 뒤 high mid/back vowel merger 적용하기
   if (grepl("u", rules) && convention == "yale"){
-    bilabials = c("p","pp","ph")
+    bilabials = c("p","pp","ph", "m") # 양순음 bilabial: ㅂㅃㅍㅁ
     for(j in 1:length(jamo)){
       if (jamo[j] %in% bilabials){
         if (!is.na(jamo[j+1]) && jamo[j+1] == "wu"){
