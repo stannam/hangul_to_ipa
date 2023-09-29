@@ -15,11 +15,10 @@ criteria_Tensification <- read_csv_resource('tensification.csv')
 criteria_Assimilation <- read_csv_resource('assimilation.csv')
 criteria_Aspiration <- read_csv_resource('aspiration.csv')
 
-
 # load hangul-unicode interface
 eval(parse(file=here::here("src","hangul_tools.R"), encoding="UTF-8"))
 
-
+# sanitize() converts all hanja 漢字 characters into hangeul. 
 sanitize <- function(word) {
   if(nchar(word) < 1){  # if empty input, no sanitize
     return(word)
@@ -94,6 +93,7 @@ applyRulesToHangul <- function(data,
   # intervocalic (H)-deletion: 공명음 사이 'ㅎ' 삭제
   # intervocalic Obstruent (V)oicing: 공명음 사이 장애음 유성음화
   
+
   if (class(data)[1]!="character") {
     if (any(class(data)=="data.frame")){
       if (is.null(data[[entry]])){
@@ -117,22 +117,22 @@ applyRulesToHangul <- function(data,
   }
   print(data)
   rules <- tolower(rules)
-
+  
   data <- sanitize(data)  # the function 'sanitize' converts all Hanja into hangul and removes string initial spaces
   jamo <- toJamo(data, removeEmptyOnset = T)
   if(grepl("p",rules) && (grepl("ㄷㅣ", jamo) || grepl("ㅌㅣ", jamo))){
-    syllable <- convertHangulStringToJamos(data)
-    for (j in 1:length(syllable)) {
-      DC <- match(substr(syllable[j],3,3), criteria_DoubleCoda$double)
-      if (is.na(DC) == FALSE) {					#겹받침을 둘로 나눔 (eg. "ㄳ" -> "ㄱㅅ")
-        substr(syllable[j], 3, 4) <- as.character(criteria_DoubleCoda$separated[DC])
-      } 
+    separated_by_char = unlist(strsplit(data,""))
+    syllable = separated_by_char
+    for (j in 1:length(separated_by_char)) {
+      syllable[j] <- toJamo(separated_by_char[j])
       phonemic <- unlist(strsplit(syllable[j], split=""))	# 'syllable'의 j번째 element를 각 자모단위로 분리해서 새로운 vector 'phonemic'에 넣습니다.
-      if(!is.na(phonemic[3]) & phonemic[3] == "ㄷ") {phonemic[3] <- "x"}
-      if(!is.na(phonemic[3]) & phonemic[3] == "ㅌ") {phonemic[3] <- "X"}
-      if(phonemic[1] == "ㅇ") {phonemic[1] <- ""}		# 첫번째 자모(즉, 초성)가 'ㅇ'이면, 그것을 제거합니다.
+      p_len = length(phonemic)
       
-      syllable[j] <- paste(phonemic, collapse="")		# 'phonemic'을 결합해서 다시 음절단위로 만듭니다. 그러나 초성의 ㅇ은 제거된 상태입니다.
+      # the following two lines mark the coda if it can undergo Palatalization
+      if(p_len > 1 & phonemic[p_len] == "ㄷ") {phonemic[p_len] <- "x"} 
+      if(p_len > 1 & phonemic[p_len] == "ㅌ") {phonemic[p_len] <- "X"}
+      
+      syllable[j] <- paste(phonemic, collapse="")		# 'phonemic'을 결합해서 다시 음절단위로 만듭니다.
     }
     
     jamo <- paste(syllable, collapse="")				# 그 결과를 jamo로.
@@ -142,7 +142,7 @@ applyRulesToHangul <- function(data,
     jamo <- gsub("X","ㅌ",jamo)
   }
   
-  if(grepl("a",rules) && grepl("ㅎ",jamo)){
+  if(grepl("a",rules) && grepl("ㅎ",jamo)){  # Apply Aspiration
     for (l in 1:nrow(criteria_Aspiration)){
       if(grepl(criteria_Aspiration$from[l],jamo)){
         jamo <- sub(criteria_Aspiration$from[l], criteria_Aspiration$to[l], jamo)
