@@ -64,14 +64,15 @@ This program does not apply most rules that are sensitive to morphological or ot
 
 ## Phonological rules (applied in this order)
 See [Shin, Kiaer, and Cha (2012) Ch. 8](https://doi.org/10.1017/CBO9781139342858.010) for details.
+
 ### Morphological
 1. Palatalization 구개음화 (e.g., mɑt-i -> mɑdʒi 'the eldest child')
 
 ### Phonological
 1. Aspiration 격음화 (e.g., pukhɑn -> pukʰɑn 'North Korea')
-1. Complex coda simplification 자음군단순화 (e.g., talk-to -> takto 'Chicken-also' NB: the SR must be [takt*o])
 1. Place assimilation 음운동화 (e.g., Obstruent nasalisation, Liquid nasalisation and Lateralisation in Shin et al 2012)
 1. Post-obstruent tensification 필수적 경음화 (e.g., pɑksu -> pɑks*u 'hand clap')
+1. Complex coda simplification 자음군단순화 (e.g., talk-to -> takto 'Chicken-also' NB: the SR must be [takt*o])
 1. Coda neutralization 음절말 장애음 중화 (e.g., bitɕʰ, bitɕ, bis -> bit 'light / debt / hair comb')
 
 ### Optional
