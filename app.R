@@ -17,13 +17,13 @@ eval(parse(file=here::here("src","worker.R"), encoding="UTF-8"))
 all_rules <- list(
   'ipa' = list(c("Palatalization 구개음화 (e.g., mɑt-i → mɑdʒi 'the eldest child')\n","p"),
                c("Aspiration 격음화 (e.g., pukhɑn → pukʰɑn 'North Korea')\n","a"),
-               c("Complex coda simplification 자음군단순화 (e.g., talk → tak 'Chicken')\n","c"),
                c("Manner assimilation 음운동화 (i.e., Obstruent nasalisation, Liquid nasalisation and Lateralisation)\n","s"),
                c("Post-obstruent tensification (e.g., pɑksu → pɑks*u 'hand clap')\n","t"),
+               c("Complex coda simplification 자음군단순화 (e.g., talk → tak 'Chicken')\n","c"),
                c("Coda neutralization 음절말 장애음 중화 (e.g., bitɕʰ / bitɕ / bis → bit 'light / debt / hair comb')\n","n"),
-               c("(Optional) intervocalic H-deletion 모음사이 'ㅎ' 삭제 (e.g., sʌnho → sʌno 'preference')\n","h"),
+               c("(Optional) intersonorant H-deletion 공명음 간 'ㅎ' 삭제 (e.g., sʌnho → sʌno 'preference')\n","h"),
                c("(Optional) non-coronalization 수의적 조음위치동화 (e.g., hɑnkɯl → hɑŋɡɯl 'the Korean alphabet')\n","o"),
-               c("(Phonetic) intervocalic obstruent voicing 장애음 유성음화 (e.g., tɕikɑk → tɕiɡɑk 'being late')\n","v"),
+               c("(Phonetic) intersonorant obstruent voicing 장애음 유성음화 (e.g., tɕikɑk → tɕiɡɑk 'being late')\n","v"),
                c("(Phonetic) liquid alternation [l ~ ɾ] (e.g., tʰɑlɑk → tʰɑɾɑk 'depravity')\n","r")
                ),
   'yale' = list(c('High vowel neutralization (i.e., High vowels must be unrounded after a bilabial)','u'))

@@ -81,19 +81,18 @@ CV_mark <- function(input){
 
 applyRulesToHangul <- function(data, 
                                entry = "entry", 
-                               rules = "pacstnhv",
+                               rules = "pastcnhv",
                                convention = "ipa"){
   # 규칙의 종류와 순서
   # (P)alatalization: 구개음화 (맏이 -> 마지)
   # (A)spiration: 격음화 (북한 -> 부칸)
-  # (C)omplex coda simplification: 자음군단순화 (닭도 -> 닥도, 닭 -> 닥)
   # a(S)similation: 음운동화
   # (T)ensification: 표준발음법 제23항(예외없는 경음화) 적용
+  # (C)omplex coda simplification: 자음군단순화 (닭도 -> 닥도, 닭 -> 닥)
   # coda (N)eutralization: 음절말 장애음 중화 (빛/빚/빗 -> 빝)
-  # intervocalic (H)-deletion: 공명음 사이 'ㅎ' 삭제
-  # intervocalic Obstruent (V)oicing: 공명음 사이 장애음 유성음화
+  # intersonorant (H)-deletion: 공명음 사이 'ㅎ' 삭제
+  # intersonorant Obstruent (V)oicing: 공명음 사이 장애음 유성음화
   
-
   if (class(data)[1]!="character") {
     if (any(class(data)=="data.frame")){
       if (is.null(data[[entry]])){
@@ -120,6 +119,8 @@ applyRulesToHangul <- function(data,
   
   data <- sanitize(data)  # the function 'sanitize' converts all Hanja into hangul and removes string initial spaces
   jamo <- toJamo(data, removeEmptyOnset = T)
+  
+  # Apply Palatalization
   if(grepl("p",rules) && (grepl("ㄷㅣ", jamo) || grepl("ㅌㅣ", jamo))){
     separated_by_char = unlist(strsplit(data,""))
     syllable = separated_by_char
@@ -142,7 +143,8 @@ applyRulesToHangul <- function(data,
     jamo <- gsub("X","ㅌ",jamo)
   }
   
-  if(grepl("a",rules) && grepl("ㅎ",jamo)){  # Apply Aspiration
+  # Apply Aspiration
+  if(grepl("a",rules) && grepl("ㅎ",jamo)){
     for (l in 1:nrow(criteria_Aspiration)){
       if(grepl(criteria_Aspiration$from[l],jamo)){
         jamo <- sub(criteria_Aspiration$from[l], criteria_Aspiration$to[l], jamo)
@@ -156,19 +158,38 @@ applyRulesToHangul <- function(data,
   
   cv <- CV_mark(jamo)
   
+  # Apply Place Assimilation
+  if(grepl("s",rules)){
+    for (l in 1:nrow(criteria_Assimilation)){
+      while(grepl(criteria_Assimilation$from[l],jamo)){
+        jamo <- sub(criteria_Assimilation$from[l],criteria_Assimilation$to[l],jamo)
+      }
+    }
+  }
+  
+  # Apply Post-Obstruent Tensification
+  if(grepl("t",rules)){
+    for (l in 1:nrow(criteria_Tensification)){
+      while(grepl(criteria_Tensification$from[l],jamo)){
+        jamo <- sub(criteria_Tensification$from[l],criteria_Tensification$to[l],jamo)
+      }
+    }
+  }
+  
+  # Apply Complex Coda Simplification
   if(grepl("c",rules)){
     CCC_location<-unlist(gregexpr("VCCC",cv))
     if (any(CCC_location > 0)) {
-    for (l in rev(CCC_location)){
-      CCC_part<-substr(jamo,l+1,l+2)
-      for (m in 1:nrow(criteria_DoubleCoda)){
-        if(grepl(criteria_DoubleCoda$separated[m],CCC_part)){
-          jamo <- paste(substr(jamo,1,l),criteria_DoubleCoda$to[m],substr(jamo,l+3,nchar(jamo)),sep="")
-          cv <- paste(substr(cv,1,l),"C",substr(cv,l+3,nchar(cv)),sep="")
+      for (l in rev(CCC_location)){
+        CCC_part<-substr(jamo,l+1,l+2)
+        for (m in 1:nrow(criteria_DoubleCoda)){
+          if(grepl(criteria_DoubleCoda$separated[m],CCC_part)){
+            jamo <- paste(substr(jamo,1,l),criteria_DoubleCoda$to[m],substr(jamo,l+3,nchar(jamo)),sep="")
+            cv <- paste(substr(cv,1,l),"C",substr(cv,l+3,nchar(cv)),sep="")
+          }
         }
+        rm(CCC_part)
       }
-      rm(CCC_part)
-    }
     }
     # 이상 CCC ->CC 해결
     # 아래 부분은 단어 끝에 나오는 자음연쇄(겹받침)의 음가를, 마치 뒤에 자음이 이어지는 것처럼 정해줌
@@ -182,22 +203,7 @@ applyRulesToHangul <- function(data,
     }
   }
   
-  if(grepl("s",rules)){
-    for (l in 1:nrow(criteria_Assimilation)){
-      while(grepl(criteria_Assimilation$from[l],jamo)){
-        jamo <- sub(criteria_Assimilation$from[l],criteria_Assimilation$to[l],jamo)
-      }
-    }
-  }
-
-  if(grepl("t",rules)){
-    for (l in 1:nrow(criteria_Tensification)){
-      while(grepl(criteria_Tensification$from[l],jamo)){
-        jamo <- sub(criteria_Tensification$from[l],criteria_Tensification$to[l],jamo)
-      }
-    }
-  }
-  
+  # Apply Coda Neutralization  
   if(grepl("n",rules)){
     phoneme <- unlist(strsplit(jamo,split=""))
     for (l in 1:length(phoneme)){
@@ -210,6 +216,7 @@ applyRulesToHangul <- function(data,
     }
   }
   
+  # Apply Intersonorant H-Deletion
   if(grepl("h",rules)){
     phoneme <- unlist(strsplit(jamo,split=""))
     split_cv <- unlist(strsplit(cv,""))
