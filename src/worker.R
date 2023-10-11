@@ -40,7 +40,7 @@ sanitize <- function(word) {
 toJamo <- function(data, removeEmptyOnset = TRUE, sboundary = FALSE) {
   # Hangul forms to Jamo
   syllable <- convertHangulStringToJamos(data)
-  for (j in 1:length(syllable)) {
+  for (j in seq_along(syllable)) {
     DC <- match(substr(syllable[j],3,3), criteria_DoubleCoda$double)
     if (is.na(DC) == FALSE) {					#겹받침을 둘로 나눔 (eg. "ㄳ" -> "ㄱㅅ")
       pre_combined <- c(substr(syllable[j], 1, 2), criteria_DoubleCoda$separated[DC])
@@ -68,7 +68,7 @@ CV_mark <- function(input){
   # This function is for identifying a Jamo as either consonant or vowel.
   output <- vector()
   phoneme <- unlist(strsplit(input,split=""))
-  for (j in 1:length(phoneme)){
+  for (j in seq_along(phoneme)){
     if (is.na (match (phoneme[j], roman_ipa$C)) == TRUE) {
       phoneme[j]="V"
     }
@@ -77,6 +77,42 @@ CV_mark <- function(input){
   }
   output <- paste(phoneme, collapse="")
   return(output)
+}
+
+CodaClusterSimplify <- function(cv, jamo, main = TRUE){
+  # coda cluster simplication.
+  # input:
+  #   cv: char. vector
+  #   jamo: char. vector
+  #   main: bool (False if only need to treat a word-final cluster.
+  # output: cv, jamo
+  if (main == TRUE){
+    CCC_location <- unlist(gregexpr("VCCC",cv))
+    if (any(CCC_location > 0)) {
+      for (l in rev(CCC_location)){
+        CCC_part <- substr(jamo,l+1,l+2)
+        for (m in seq_len(nrow(criteria_DoubleCoda))){
+          if(grepl(criteria_DoubleCoda$separated[m],CCC_part)){
+            jamo <- paste(substr(jamo,1,l),criteria_DoubleCoda$to[m],substr(jamo,l+3,nchar(jamo)),sep="")
+            cv <- paste(substr(cv,1,l),"C",substr(cv,l+3,nchar(cv)),sep="")
+            }
+          }
+        rm(CCC_part)
+        }
+      }
+    }
+  # 이상 CCC ->CC 해결
+  # 아래 부분은 단어 끝에 나오는 자음연쇄(겹받침)의 음가를, 마치 뒤에 자음이 이어지는 것처럼 정해줌
+  if(grepl("CC$",cv)){
+    for (l in seq_len(nrow(criteria_DoubleCoda))){
+      if(grepl(paste(criteria_DoubleCoda$separated[l],"$",sep=""),jamo)){
+        jamo <- sub(criteria_DoubleCoda$separated[l],criteria_DoubleCoda$to[l],jamo)
+        cv <- sub("CC$","C",cv)
+      }
+    }
+  }
+  return(c(cv, jamo))
+
 }
 
 applyRulesToHangul <- function(data, 
@@ -119,12 +155,19 @@ applyRulesToHangul <- function(data,
   
   data <- sanitize(data)  # the function 'sanitize' converts all Hanja into hangul and removes string initial spaces
   jamo <- toJamo(data, removeEmptyOnset = T)
-  
+  cv <- CV_mark(jamo)
+
+  # resolve word-final consonant clusters right off the bat
+  res_pack <- CodaClusterSimplify(cv, jamo)
+  cv <- res_pack[1]
+  jamo <- res_pack[2]
+  rm(res_pack)
+
   # Apply Palatalization
   if(grepl("p",rules) && (grepl("ㄷㅣ", jamo) || grepl("ㅌㅣ", jamo))){
     separated_by_char = unlist(strsplit(data,""))
     syllable = separated_by_char
-    for (j in 1:length(separated_by_char)) {
+    for (j in seq_along(separated_by_char)) {
       syllable[j] <- toJamo(separated_by_char[j])
       phonemic <- unlist(strsplit(syllable[j], split=""))	# 'syllable'의 j번째 element를 각 자모단위로 분리해서 새로운 vector 'phonemic'에 넣습니다.
       p_len = length(phonemic)
@@ -145,7 +188,7 @@ applyRulesToHangul <- function(data,
   
   # Apply Aspiration
   if(grepl("a",rules) && grepl("ㅎ",jamo)){
-    for (l in 1:nrow(criteria_Aspiration)){
+    for (l in seq_len(nrow(criteria_Aspiration))){
       if(grepl(criteria_Aspiration$from[l],jamo)){
         jamo <- sub(criteria_Aspiration$from[l], criteria_Aspiration$to[l], jamo)
       }
@@ -156,11 +199,9 @@ applyRulesToHangul <- function(data,
     return("")
   }
   
-  cv <- CV_mark(jamo)
-  
   # Apply Place Assimilation
   if(grepl("s",rules)){
-    for (l in 1:nrow(criteria_Assimilation)){
+    for (l in seq_len(nrow(criteria_Assimilation))){
       while(grepl(criteria_Assimilation$from[l],jamo)){
         jamo <- sub(criteria_Assimilation$from[l],criteria_Assimilation$to[l],jamo)
       }
@@ -169,7 +210,7 @@ applyRulesToHangul <- function(data,
   
   # Apply Post-Obstruent Tensification
   if(grepl("t",rules)){
-    for (l in 1:nrow(criteria_Tensification)){
+    for (l in seq_len(nrow(criteria_Tensification))){
       while(grepl(criteria_Tensification$from[l],jamo)){
         jamo <- sub(criteria_Tensification$from[l],criteria_Tensification$to[l],jamo)
       }
@@ -178,35 +219,16 @@ applyRulesToHangul <- function(data,
   
   # Apply Complex Coda Simplification
   if(grepl("c",rules)){
-    CCC_location<-unlist(gregexpr("VCCC",cv))
-    if (any(CCC_location > 0)) {
-      for (l in rev(CCC_location)){
-        CCC_part<-substr(jamo,l+1,l+2)
-        for (m in 1:nrow(criteria_DoubleCoda)){
-          if(grepl(criteria_DoubleCoda$separated[m],CCC_part)){
-            jamo <- paste(substr(jamo,1,l),criteria_DoubleCoda$to[m],substr(jamo,l+3,nchar(jamo)),sep="")
-            cv <- paste(substr(cv,1,l),"C",substr(cv,l+3,nchar(cv)),sep="")
-          }
-        }
-        rm(CCC_part)
-      }
-    }
-    # 이상 CCC ->CC 해결
-    # 아래 부분은 단어 끝에 나오는 자음연쇄(겹받침)의 음가를, 마치 뒤에 자음이 이어지는 것처럼 정해줌
-    if(grepl("CC$",cv)){
-      for (l in 1:nrow(criteria_DoubleCoda)){
-        if(grepl(paste(criteria_DoubleCoda$separated[l],"$",sep=""),jamo)){
-          jamo <- sub(criteria_DoubleCoda$separated[l],criteria_DoubleCoda$to[l],jamo)
-          cv <- sub("CC$","C",cv)
-        }
-      }
-    }
+    res_package <- CodaClusterSimplify(cv, jamo)
+    cv <- res_package[1]
+    jamo <- res_package[2]
+    rm(res_package)
   }
   
   # Apply Coda Neutralization  
   if(grepl("n",rules)){
     phoneme <- unlist(strsplit(jamo,split=""))
-    for (l in 1:length(phoneme)){
+    for (l in seq_along(phoneme)){
       if(is.na(match(phoneme[l],neutral$from))==FALSE){
         if(l==length(phoneme)|unlist(strsplit(cv,split=""))[l+1]=="C"){
           phoneme[l] <- as.character(neutral$to[match(phoneme[l],neutral$from)])
@@ -256,7 +278,7 @@ applyRulesToHangul <- function(data,
     romanization <- roman_yale
   }
   jamo <- unlist(strsplit(jamo,split=""))
-  for (l in 1:length(jamo)){
+  for (l in seq_along(jamo)){
     if(is.na(match(jamo[l], romanization$C))==T){
       if(is.na(match(jamo[l], romanization$V))==T){
         if(jamo[l]!=' '){jamo[l]<-""}
@@ -270,7 +292,7 @@ applyRulesToHangul <- function(data,
   # Yale convention에서 bilabial 뒤 high mid/back vowel merger 적용하기
   if (grepl("u", rules) && convention == "yale"){
     bilabials = c("p","pp","ph", "m") # 양순음 bilabial: ㅂㅃㅍㅁ
-    for(j in 1:length(jamo)){
+    for(j in seq_along(jamo)){
       if (jamo[j] %in% bilabials){
         if (!is.na(jamo[j+1]) && jamo[j+1] == "wu"){
           jamo[j+1] <- "u"
@@ -283,7 +305,7 @@ applyRulesToHangul <- function(data,
   if (grepl("v", rules) && convention == "ipa"){
     sonorants = c("n","l","ŋ","m")
     cv_split = unlist(strsplit(cv, split=''))
-    for(j in 1:length(jamo)){
+    for(j in seq_along(jamo)){
 
       if(jamo[j] %in% sonorants || cv_split[j] == "V"){
         if(!is.na(jamo[j+2]) && (jamo[j+2] %in% sonorants || cv_split[j+2] == "V")){
@@ -317,7 +339,7 @@ applyRulesToHangul <- function(data,
     velars = c("ɡ","k","k*","kʰ")
     bilabials = c("b","p","p*","pʰ","m")
     non_velar_nasals = c('m','n')
-    for(j in 1:length(jamo)){
+    for(j in seq_along(jamo)){
       
       if(jamo[j] %in% non_velar_nasals && !is.na(jamo[j+1])){
         if(jamo[j+1] %in% velars){
