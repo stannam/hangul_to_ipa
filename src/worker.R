@@ -191,6 +191,7 @@ applyRulesToHangul <- function(data,
     for (l in seq_len(nrow(criteria_Aspiration))){
       if(grepl(criteria_Aspiration$from[l],jamo)){
         jamo <- sub(criteria_Aspiration$from[l], criteria_Aspiration$to[l], jamo)
+        cv <- CV_mark(jamo)
       }
     }
   } 
