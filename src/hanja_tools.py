@@ -82,4 +82,4 @@ def hanja_cleaner(word: str, hanja_loc:list[int]) -> str:
 
 
 if __name__ == '__main__':
-    print(hanja_cleaner("禮度", hanja_loc=[0,1]))
+    pass

@@ -9,6 +9,7 @@ return (read_csv(file=here::here('stable',file_name), show_col_types = FALSE))
 criteria_DoubleCoda <- read_csv_resource('double_coda.csv')
 roman_ipa <- read_csv_resource('ipa.csv')
 roman_yale <- read_csv_resource('yale.csv')
+roman_park <- read_csv_resource('park.csv')
 criteria_DoubleCoda <- read_csv_resource('double_coda.csv')
 neutral <- read_csv_resource('neutralization.csv')
 criteria_Tensification <- read_csv_resource('tensification.csv')
@@ -128,7 +129,7 @@ applyRulesToHangul <- function(data,
   # coda (N)eutralization: 음절말 장애음 중화 (빛/빚/빗 -> 빝)
   # intersonorant (H)-deletion: 공명음 사이 'ㅎ' 삭제
   # intersonorant Obstruent (V)oicing: 공명음 사이 장애음 유성음화
-  
+
   if (class(data)[1]!="character") {
     if (any(class(data)=="data.frame")){
       if (is.null(data[[entry]])){
@@ -150,18 +151,22 @@ applyRulesToHangul <- function(data,
   if(nchar(data) < 1){  # if no content, then return no content
     return("")
   }
-  print(data)
+  print(paste("[DEBUG] input: ", data))
   rules <- tolower(rules)
   
   data <- sanitize(data)  # the function 'sanitize' converts all Hanja into hangul and removes string initial spaces
   jamo <- toJamo(data, removeEmptyOnset = T)
   cv <- CV_mark(jamo)
 
+  print(paste("[DEBUG] after sanitize: ", data))
+
   # resolve word-final consonant clusters right off the bat
   res_pack <- CodaClusterSimplify(cv, jamo)
   cv <- res_pack[1]
   jamo <- res_pack[2]
   rm(res_pack)
+
+  print(paste("[DEBUG] result of coda cluster simplify: ", jamo))
 
   # Apply Palatalization
   if(grepl("p",rules) && (grepl("ㄷㅣ", jamo) || grepl("ㅌㅣ", jamo))){
@@ -276,6 +281,8 @@ applyRulesToHangul <- function(data,
     romanization <- roman_ipa
   } else if (convention == "yale"){
     romanization <- roman_yale
+  } else if (convention == "park"){
+    romanization <- roman_park
   }
   jamo <- unlist(strsplit(jamo,split=""))
   for (l in seq_along(jamo)){
