@@ -2,6 +2,7 @@
 import regex as re
 
 from classes import Word, ConversionTable
+from typing import Union
 
 
 CT_double_codas = ConversionTable('double_coda')
@@ -22,15 +23,18 @@ def get_substring_ind(string: str, pattern: str) -> list:
     return [match.start() for match in re.finditer(f'(?={pattern})', string)]
 
 
-def transcribe(jamos: str, convention: ConversionTable = CT_convention) -> str:
-    transcribed = ''
+def transcribe(jamos: str, convention: ConversionTable = CT_convention, str_return: bool = False) -> Union[list, str]:
+    transcribed = []
     for jamo in jamos:
         is_C = convention.safe_index('C', jamo)
         is_V = convention.safe_index('V', jamo)
         if is_V >= 0:
-            transcribed += convention.VSymbol[is_V]
+            transcribed.append(convention.VSymbol[is_V])
         elif is_C >= 0:
-            transcribed += convention.CSymbol[is_C]
+            transcribed.append(convention.CSymbol[is_C])
+
+    if str_return:
+        return ''.join(transcribed)
     return transcribed
 
 
@@ -130,14 +134,14 @@ def non_coronalize(input_word: Word) -> str:
     return ''.join(res)
 
 
-def inter_v(symbols: str) -> str:
+def inter_v(symbols: list) -> list:
     voicing_table = {
         'p': 'b',
         't': 'd',
         'k': 'ɡ',
         'tɕ': 'dʑ'
     }
-    ipa_sonorants = [transcribe(s) for s in SONORANTS]
+    ipa_sonorants = [transcribe(s, str_return=True) for s in SONORANTS]
 
     res = list(symbols)
 
@@ -154,15 +158,15 @@ def inter_v(symbols: str) -> str:
                 res[index] = voicing_table.get(symbol, symbol)
                 res[index + 1] = 'ʑ'
 
-    return ''.join(res)
+    return res
 
 
-def alternate_lr(symbols: str) -> str:
-    ipa_vowels = [transcribe(v) for v in VOWELS]
+def alternate_lr(symbols: list) -> list:
+    ipa_vowels = [transcribe(v, str_return=True) for v in VOWELS]
 
     res = list(symbols)
 
-    l_locs = get_substring_ind(symbols, 'l')
+    l_locs = get_substring_ind(''.join(symbols), 'l')
 
     for l_loc in reversed(l_locs):
         if l_loc == 0 or l_loc == (len(symbols) - 1):
@@ -173,7 +177,7 @@ def alternate_lr(symbols: str) -> str:
         if preceding in ipa_vowels and succeeding in ipa_vowels:
             res[l_loc] = 'ɾ'
         symbols = ''.join(res)
-    return ''.join(res)
+    return res
 
 
 def apply_rules(word: Word, rules_to_apply: str = 'pastcnhovr') -> Word:
@@ -222,7 +226,7 @@ def apply_rules(word: Word, rules_to_apply: str = 'pastcnhovr') -> Word:
     return word
 
 
-def apply_phonetics(ipa_symbols: str, rules_to_apply: str):
+def apply_phonetics(ipa_symbols: list, rules_to_apply: str) -> list:
     if 'v' in rules_to_apply:
         ipa_symbols = inter_v(ipa_symbols)
     if 'r' in rules_to_apply and 'l' in ipa_symbols:

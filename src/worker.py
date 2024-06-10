@@ -30,7 +30,10 @@ def sanitize(word: str) -> str:
     return r
 
 
-def convert(hangul: str, rules_to_apply: str = 'pastcnhovr', convention: str = 'ipa'):
+def convert(hangul: str,
+            rules_to_apply: str = 'pastcnhovr',
+            convention: str = 'ipa',
+            sep: str = '') -> str:
     # the main function for IPA conversion
 
     if len(hangul) < 1:  # if no content, then return no content
@@ -64,8 +67,8 @@ def convert(hangul: str, rules_to_apply: str = 'pastcnhovr', convention: str = '
     if CT_convention.name == 'ipa':
         transcribed = rules.apply_phonetics(transcribed, rules_to_apply)
 
-    return transcribed
+    return sep.join(transcribed)
 
 
 if __name__ == "__main__":
-    pass
+    convert("")
