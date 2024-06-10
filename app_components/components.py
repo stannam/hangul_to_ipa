@@ -29,6 +29,22 @@ donation_ribbon = dbc.Stack([
         ),
     ])
 
+
+header = dbc.Card(
+    dbc.CardBody(
+        html.H2("한글 → [hɑŋɡɯl]",
+                style={'text-align': 'center',
+                       'fontWeight': 'bold',
+                       'height': '100px',
+                       'line-height': '70px'})
+    ),
+    color='#002145',
+    inverse=True,
+    style={'height': '100px', 'marginTop': '10px', 'marginBottom': '20px'},
+
+)
+
+
 ipa_parameters = dbc.Checklist(
     options=[
         {"label": "Palatalization 구개음화", "value": "p"},
@@ -56,18 +72,61 @@ yale_parameters = dbc.Checklist(
 )
 
 
-header = dbc.Card(
-    dbc.CardBody(
-        html.H2("한글 → [hɑŋɡɯl]",
-                style={'text-align': 'center',
-                       'fontWeight': 'bold',
-                       'height': '100px',
-                       'line-height': '70px'})
-    ),
-    color='#002145',
-    inverse=True,
-    style={'height': '100px', 'marginTop': '10px', 'marginBottom': '20px'},
-
+collapsed_parameter_setter = dbc.Collapse(
+    dbc.Card(
+        [
+            dbc.Label("What do you want to do?", style={'fontWeight': 'bold'}),
+            dbc.RadioItems(
+                options=[
+                    {"label": "IPA Transcription", "value": "ipa"},
+                    {"label": "Yale Romanization", "value": "yale"},
+                ],
+                value='ipa',
+                id="ipa-yale",
+                inline=True,
+                className="mb-4"
+            ),
+            dbc.Label("Phonological rules", style={'fontWeight': 'bold'}),
+            dbc.Row(ipa_parameters, id='transcription_settings', className='mb-3'),
+            dbc.Label("Segments are separated by...", style={'fontWeight': 'bold'}),
+            dbc.Input(id="separator", value="", type="text", maxLength=1),
+            dbc.FormText(id="sep-example", children="Preview: hɑŋɡɯl")
+        ],
+        body=True),
+    id="settings",
+    is_open=False,
 )
 
 
+output_card = dbc.Card(
+        [
+            dbc.Row([
+                    dbc.Label("Your input:", style={'fontWeight': 'bold'}),
+                    dbc.Textarea(
+                        id='echo-input',
+                        value='',
+                        style={'width': '100%'},
+                        readOnly=True
+                    ),
+                    ],
+                    id='echo-input-row',
+                    className='mb-3'
+                    ),
+            dbc.Row(
+                [
+                    dbc.Label("", style={'fontWeight': 'bold'}, id='output-label'),
+                    dbc.Textarea(
+                        id='result-box',
+                        value='',
+                        style={'width': '100%'},
+                        readOnly=True
+                    ),
+                ],
+                id='output-row'
+
+            ),
+        ],
+        body=True,
+        id="output",
+        className='mb-3'
+    )

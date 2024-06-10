@@ -1,5 +1,3 @@
-import sys
-import os
 from dash import Dash, Output, Input, State, html
 from app_components.sample_word import sample_word
 from app_components.components import *
@@ -38,58 +36,9 @@ app.layout = html.Div(
             ],
             className="me-1",
         ),
-        dbc.Card(
-            [
-                dbc.Row([
-                        dbc.Label("Your input:", style={'fontWeight': 'bold'}),
-                        dbc.Textarea(
-                            id='echo-input',
-                            value='',
-                            style={'width': '100%'},
-                            readOnly=True
-                        ),
-                        ],
-                        id='echo-input-row',
-                        className='mb-3'
-                        ),
-                dbc.Row(
-                    [
-                        dbc.Label("", style={'fontWeight': 'bold'}, id='output-label'),
-                        dbc.Textarea(
-                            id='result-box',
-                            value='',
-                            style={'width': '100%'},
-                            readOnly=True
-                        ),
-                    ],
-                    id='output-row'
+        collapsed_parameter_setter,
+        output_card,
 
-                ),
-            ],
-            body=True,
-            id="output",
-            className='mb-3'
-        ),
-        dbc.Collapse(
-            dbc.Card(
-                [
-                    dbc.Label("What do you want to do?", style={'fontWeight': 'bold'}),
-                    dbc.RadioItems(
-                        options=[
-                            {"label": "IPA Transcription", "value": "ipa"},
-                            {"label": "Yale Romanization", "value": "yale"},
-                        ],
-                        value='ipa',
-                        id="ipa-yale",
-                        className="mb-4"
-                    ),
-                    dbc.Label("Phonological rules", style={'fontWeight': 'bold'}),
-                    dbc.Row(ipa_parameters, id='transcription_settings', className='mb-3'),
-                ],
-                body=True),
-            id="settings",
-            is_open=False,
-        ),
     ],
     style={'padding': '10px'}
 )
@@ -125,56 +74,29 @@ def update_transcription_settings(selected_value):
     [Input("hangul-input", "value"),
      Input("hangul-input","placeholder"),
      Input('ipa-yale', 'value'),
-     Input("parameter-checklist", "value")],
+     Input("parameter-checklist", "value"),
+     Input("separator", "value")],
 )
-def transcribe(usr_input, placeholder, convention, rules):
+def transcribe(usr_input, placeholder, convention, rules, separator):
     to_convert = usr_input if usr_input is not None else placeholder
     applying_rules = ''.join(rules)
     result = convert(hangul=to_convert,
                      rules_to_apply=applying_rules,
                      convention=convention,
-                     sep='.')
+                     sep=separator)
     result_label = f'Your {convention.upper()} output:'
+    result = f'[{result}]' if convention == 'ipa' else result
     return to_convert, result_label, result
+
+
+@app.callback(
+    [Output("sep-example", "children"),],
+    [Input("separator", "value"),],
+)
+def show_sep_example(sep):
+    example = f"Preview: {sep.join(['h', 'ɑ', 'ŋ', 'ɡ', 'ɯ', 'l'])}"
+    return [example]
+
 
 if __name__ == "__main__":
     app.run_server(debug=True)
-
-
-
-# app.layout = html.Div([
-#     html.H1("Dash App Example"),
-#     dcc.Input(
-#         id='hangul-input',
-#         type='text',
-#         placeholder=sample_word
-#     ),
-#     html.Br(),
-#     dcc.Checklist(
-#         id='rule-checklist',
-#         options=[{'label': rule['name'], 'value': rule['code']} for rule_set in all_rules.values() for rule in rule_set],
-#         value=[]
-#     ),
-#     html.Br(),
-#     html.Button('Submit', id='submit-button', n_clicks=0),
-#     html.Div(id='output-container', children=[])
-# ])
-#
-# @app.callback(
-#     Output('output-container', 'children'),
-#     Input('submit-button', 'n_clicks'),
-#     State('hangul-input', 'value'),
-#     State('rule-checklist', 'value')
-# )
-# def update_output(n_clicks, selected_sample, selected_rules):
-#     if n_clicks > 0:
-#         # Processing logic here
-#         # This is a placeholder for the actual processing based on selected_sample and selected_rulesll
-#         processed_data = f"Processed {selected_sample} with rules {selected_rules}"
-#         return html.Div([
-#             html.H2("Processed Output"),
-#             html.P(processed_data)
-#         ])
-#     return ""
-#
-#
