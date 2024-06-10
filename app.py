@@ -7,6 +7,7 @@ from src.worker import convert
 # app
 app = Dash(__name__, external_stylesheets=[dbc.themes.COSMO])
 app.title = "Hangul to IPA"
+server = app.server
 
 # layout
 app.layout = html.Div(
@@ -99,4 +100,4 @@ def show_sep_example(sep):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run(debug=True)
