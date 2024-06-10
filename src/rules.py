@@ -1,7 +1,7 @@
 # phonological rules
 import regex as re
 
-from classes import Word, ConversionTable
+from src.classes import Word, ConversionTable
 from typing import Union
 
 
@@ -166,7 +166,7 @@ def alternate_lr(symbols: list) -> list:
 
     res = list(symbols)
 
-    l_locs = get_substring_ind(''.join(symbols), 'l')
+    l_locs = [index for index, value in enumerate(symbols) if value == 'l']
 
     for l_loc in reversed(l_locs):
         if l_loc == 0 or l_loc == (len(symbols) - 1):

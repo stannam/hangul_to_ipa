@@ -1,6 +1,6 @@
 import regex as re
-from classes import ConversionTable, Word
-import rules
+from src.classes import ConversionTable, Word
+import src.rules as rules
 
 
 def transcription_convention(convention: str):
@@ -25,7 +25,7 @@ def sanitize(word: str) -> str:
     if len(hanja_idx) == 0:  # if no hanja, no sanitize
         return word
 
-    from hanja_tools import hanja_cleaner  # import hanja_cleaner only when needed
+    from src.hanja_tools import hanja_cleaner  # import hanja_cleaner only when needed
     r = hanja_cleaner(word, hanja_idx)
     return r
 
@@ -52,7 +52,7 @@ def convert(hangul: str,
     word = rules.apply_rules(word, rules_to_apply)
 
     # high mid/back vowel merger after bilabial (only for the Yale convention)
-    if CT_convention.name == 'yale':
+    if CT_convention.name == 'yale' and 'u' in rules_to_apply:
         bilabials = list("ㅂㅃㅍㅁ")
         applied = list(word.jamo)
         for i, jamo in enumerate(word.jamo[:-1]):
@@ -71,4 +71,4 @@ def convert(hangul: str,
 
 
 if __name__ == "__main__":
-    convert("")
+    convert("잘")
