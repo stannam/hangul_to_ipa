@@ -100,4 +100,4 @@ def show_sep_example(sep):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run_server(debug=True)
