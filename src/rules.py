@@ -71,8 +71,11 @@ def pot(word: Word) -> str:
 
 
 def neutralize(word: Word) -> str:
-    new_final_C = CT_neutral.sub(word.jamo[-1])
-    return word.jamo[:-1] + new_final_C
+    new_jamos = list(word.jamo)
+    for i, jamo in enumerate(new_jamos):
+        if i == len(new_jamos) - 1 or word.cv[i + 1] == 'C':
+            new_jamos[i] = CT_neutral.apply(jamo)
+    return ''.join(new_jamos)
 
 
 def delete_h(word: Word) -> str:
@@ -212,7 +215,7 @@ def apply_rules(word: Word, rules_to_apply: str = 'pastcnhovr') -> Word:
         word = simplify_coda(word)
 
     # apply coda neutralization
-    if 'n' in rules_to_apply and word.cv[-1] == 'C':
+    if 'n' in rules_to_apply:
         word.jamo = neutralize(word)
 
     # apply intersonorant H-deletion

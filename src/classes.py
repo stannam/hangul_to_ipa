@@ -26,11 +26,13 @@ class ConversionTable:
             setattr(self, header, tuple(getattr(self, header)))
 
     def apply(self, text: str, find_in: str = '_from') -> str:
+        # for a single phoneme, find it among _from (or any attribute name find_in)
+        # and convert it to _to
         try:
             from_tuple = getattr(self, find_in)
             ind = from_tuple.index(text)
             return self._to[ind]
-        except AttributeError:
+        except (AttributeError, ValueError):
             return text
 
     def sub(self, text: str, find_in: str = '_from') -> str:
