@@ -179,7 +179,7 @@ def alternate_lr(symbols: list) -> list:
         succeeding = symbols[l_loc + 1]
         if preceding in ipa_vowels and succeeding in ipa_vowels:
             res[l_loc] = 'ɾ'
-        symbols = ''.join(res)
+
     return res
 
 
