@@ -1,5 +1,6 @@
 import csv
 from hangul_tools import hangul_to_jamos, jamo_to_hangul
+from pathlib import Path
 
 HIGHV_DIPHTHONGS = ("ㅑ", "ㅕ", "ㅖ", "ㅛ", "ㅠ", "ㅣ")
 
@@ -14,7 +15,8 @@ def realize_hanja(raw: str) -> str:
 def load_jajeon() -> dict:
     # import a 漢字 - 한글 conversion table
     jajeon = {}
-    with open('../stable/hanja.tsv', newline='', encoding='utf-8') as f:
+    jajeon_path = Path().absolute().parent / 'tables' / 'hanja.tsv'
+    with open(jajeon_path, newline='', encoding='utf-8') as f:
         reader = csv.reader(f, delimiter='\t')
         for row in reader:
             # the original file uses the Unicode code point (e.g., U+349A), so need to convert this to the actual hanja

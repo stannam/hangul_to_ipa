@@ -1,12 +1,14 @@
 import csv
 from hangul_tools import hangul_to_jamos
+from pathlib import Path
 
 
 class ConversionTable:
     def __init__(self, name):
         self.name = name
-        # Open the tab-delimited file located in the 'stable' folder
-        with open(f'../stable/{self.name}.csv', 'r', encoding='utf-8') as f:
+        # Open the tab-delimited file located in the 'tables' folder
+        table_path = Path().absolute().parent / 'tables' / f'{self.name}.csv'
+        with open(table_path, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f, delimiter=',')
             # Iterate over each row in the file
             for row in reader:
