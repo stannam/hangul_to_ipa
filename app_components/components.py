@@ -47,16 +47,16 @@ header = dbc.Card(
 
 ipa_parameters = dbc.Checklist(
     options=[
-        {"label": "Palatalization 구개음화", "value": "p"},
-        {"label": "Aspiration 격음화", "value": "a"},
-        {"label": "Manner assimilation 음운동화", "value": "s"},
-        {"label": "Post-obstruent tensification", "value": "t"},
-        {"label": "Complex coda simplification 자음군단순화", "value": "c"},
-        {"label": "Coda neutralization 음절말 장애음 중화", "value": "n"},
-        {"label": "(Optional) intersonorant H-deletion", "value": "h"},
-        {"label": "(Optional) non-coronalization", "value": "o"},
-        {"label": "(Phonetic) intersonorant obstruent voicing", "value": "v"},
-        {"label": "(Phonetic) liquid alternation", "value": "r"},
+        {"label": "Palatalization 구개음화 (e.g., 맏이 mɑt-i -> mɑdʒi 'the eldest child')", "value": "p"},
+        {"label": "Aspiration 격음화 (e.g., 녹화 nokhwa -> nokʰwa 'record')", "value": "a"},
+        {"label": "Manner assimilation 음운동화 (cf. Obstruent Nasalisation, Liquid Nasalisation and Lateralisation in Shin et al 2012)", "value": "s"},
+        {"label": "Post-obstruent tensification 필수적 경음화 (e.g., 박수 pɑksu -> pɑks*u 'hand clap')", "value": "t"},
+        {"label": "Complex coda simplification 자음군단순화 (e.g., 닭도 talk-to -> takto 'Chicken-also' NB: the SR must be [takt*o])", "value": "c"},
+        {"label": "Coda neutralization 음절말 장애음 중화 (e.g., 빛빚빗 bitɕʰ, bitɕ, bis -> bit 'light / debt / hair comb')", "value": "n"},
+        {"label": "(Optional) intersonorant H-deletion 공명음사이 'ㅎ' 삭제 (e.g., 선호 sʌnho → sʌno 'preference')", "value": "h"},
+        {"label": "(Optional) non-coronalization 수의적 조음위치동화 (e.g., 한글 hɑnkɯl → hɑŋɡɯl 'the Korean alphabet')", "value": "o"},
+        {"label": "(Phonetic) intersonorant obstruent voicing 장애음 유성음화 (e.g., 부부 pupu → pubu 'married couple')", "value": "v"},
+        {"label": "(Phonetic) liquid alternation (e.g., 이리 ili → iɾi 'wolf')", "value": "r"},
         ],
     value=list('pastcnhovr'),
     id="parameter-checklist",
@@ -102,11 +102,9 @@ output_card = dbc.Card(
         [
             dbc.Row([
                     dbc.Label("Your input:", style={'fontWeight': 'bold'}),
-                    dbc.Textarea(
+                    dbc.Label(
                         id='echo-input',
-                        value='',
-                        style={'width': '100%'},
-                        readOnly=True
+                        children='',
                     ),
                     ],
                     id='echo-input-row',

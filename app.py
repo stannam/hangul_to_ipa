@@ -16,7 +16,7 @@ app.layout = html.Div(
         header,
         dbc.Label("Enter your 한글:"),
         dbc.Input(id='hangul-input', placeholder=sample_word, type='text'),
-        dbc.FormText("Type something in the box above. Upon launching, a random word sill appear",
+        dbc.FormText("Type something in the box above. Upon launching, a random word will appear",
                      className='mb-5'),
         html.Br(),
         html.Br(),
@@ -69,7 +69,7 @@ def update_transcription_settings(selected_value):
 
 
 @app.callback(
-    [Output("echo-input", "value"),
+    [Output("echo-input", "children"),
      Output("output-label", "children"),
      Output("result-box", "value")],
     [Input("hangul-input", "value"),

@@ -8,10 +8,10 @@ sample_classes = {
     'optional_processes': ["한글", "신문", "반갑게"],
     'palatalization': ["굳이?", "맏이", "돋이", "해돋이", "같이", "끝이"],
     'random_words': ["툭하면", "박수", "덮밥", "통사론", "의미론", "스테로이드", "사랑", "우리", "예시", "남녀", "엉터리", "원숭이"
-                     "엄준식", "인터폴인터폴인터내셔널폴리스", "개미퍼먹어", "무를주세요", "엄친아", "멘붕", "안습", "잼민이"]
+                     "엄준식", "왜날쀍", "개미퍼먹어", "무를주세요", "엄친아", "멘붕", "안습", "잼민이", "분가하겠습니다"]
 }
 
-weights = [1, 5, 2, 5, 5, 5, 1]
+weights = [1, 5, 2, 6, 5, 5, 2]
 
 
 sample_pool = [item for key, weight in zip(sample_classes.keys(), weights) for item in sample_classes[key] * weight]
