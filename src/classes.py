@@ -1,3 +1,6 @@
+# for representing conversion tables (list of input - output pairs for a phonological rule)
+# and representing words
+
 import csv
 from src.hangul_tools import hangul_to_jamos
 from pathlib import Path
