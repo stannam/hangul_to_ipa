@@ -1,11 +1,14 @@
 from dash import Dash, Output, Input, State, html
-from app_components.sample_word import sample_word
 from app_components.components import *
 from src.worker import convert
 
 
 # app
-app = Dash(__name__, external_stylesheets=[dbc.themes.COSMO])
+app = Dash(__name__,
+           external_stylesheets=[
+               dbc.themes.COSMO,
+               'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css'
+           ])
 app.title = "Hangul to IPA"
 server = app.server
 
@@ -14,32 +17,12 @@ app.layout = html.Div(
     [
         donation_ribbon,
         header,
-        dbc.Label("Enter your 한글:"),
-        dbc.Input(id='hangul-input', placeholder=sample_word, type='text'),
-        dbc.FormText("Type something in the box above. Upon launching, a random word will appear",
-                     className='mb-5'),
+        input_box,
         html.Br(),
-        html.Br(),
-        dbc.ButtonGroup(
-            [
-                dbc.Button(
-                    "Convert",
-                    id="convert-btn",
-                    className='mb-3',
-                    color='primary'
-                ), dbc.Button(
-                    "Settings",
-                    id='settings-btn',
-                    className='mb-3',
-                    color='secondary',
-                    n_clicks=0
-                )
-            ],
-            className="me-1",
-        ),
+        main_buttons,
         collapsed_parameter_setter,
         output_card,
-
+        footer
     ],
     style={'padding': '10px'}
 )

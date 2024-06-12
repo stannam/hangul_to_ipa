@@ -1,6 +1,6 @@
 from dash import html
 import dash_bootstrap_components as dbc
-
+from app_components.sample_word import sample_word
 
 donation_ribbon = dbc.Stack([
         dbc.Alert(
@@ -42,6 +42,34 @@ header = dbc.Card(
     inverse=True,
     style={'height': '100px', 'marginTop': '10px', 'marginBottom': '20px'},
 
+)
+
+
+input_box = dbc.Row(dbc.Col([
+    dbc.Label("Enter your 한글:"),
+    dbc.Input(id='hangul-input', placeholder=sample_word, type='text'),
+    dbc.FormText("Type something in the box above. Upon launching, a random word will appear",
+                 className='mb-5'),
+    ],
+))
+
+
+main_buttons = dbc.ButtonGroup(
+    [
+        dbc.Button(
+            "Convert",
+            id="convert-btn",
+            className='mb-3',
+            color='primary'
+        ), dbc.Button(
+            "Settings",
+            id='settings-btn',
+            className='mb-3',
+            color='secondary',
+            n_clicks=0
+        )
+    ],
+    className="me-1",
 )
 
 
@@ -128,3 +156,40 @@ output_card = dbc.Card(
         id="output",
         className='mb-3'
     )
+
+footer = html.Footer(
+    dbc.Container(
+        dbc.Row(
+            dbc.Col([
+                html.A(
+                    html.I(className="fab fa-github fa-2x"),  # GitHub icon
+                    href="https://github.com/stannam/hangul_to_ipa",
+                    target="_blank",
+                    style={'marginRight': '20px'}
+                ),
+                html.A(
+                    html.I(className="fas fa-mug-hot fa-2x"),  # Coffee icon
+                    href="https://buymeacoffee.com/linguisting",
+                    target="_blank",
+                    style={'marginRight': '20px'}
+                ),
+                html.A(
+                    html.I(className="fas fa-thumbs-up fa-2x"),  # Donate icon
+                    href="https://toss.me/sleepywug",
+                    target="_blank"
+                ),
+                ],
+                className="text-center"
+            )
+        ),
+        className="mt-4"
+    ),
+    style={
+        "position": "fixed",
+        "left": "0",
+        "bottom": "0",
+        "width": "100%",
+        "backgroundColor": "#f8f9fa",
+        "padding": "10px"
+    }
+)
