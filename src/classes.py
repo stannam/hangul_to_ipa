@@ -2,6 +2,7 @@
 # and representing words
 
 import csv
+import regex as re
 from src.hangul_tools import hangul_to_jamos
 from pathlib import Path
 
@@ -95,7 +96,9 @@ class Word:
     def to_jamo(self, hangul: str, no_empty_onset: bool = True, sboundary: bool = False) -> str:
         # Convert Hangul forms to jamo, remove empty onset ㅇ
         # e.g., input "안녕" output "ㅏㄴㄴㅕㅇ"
-        jamo_forms = hangul_to_jamos(hangul)
+        not_hangul = r'[^가-힣]'
+        cleaned_hangul = re.sub(not_hangul, '', hangul)  # hangul without special characters
+        jamo_forms = hangul_to_jamos(cleaned_hangul)
 
         jamo_forms = self.separate_double_coda(jamo_forms)  # divide double coda (e.g., "ㄳ" -> "ㄱㅅ")
 
