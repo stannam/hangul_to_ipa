@@ -15,10 +15,7 @@ def realize_hanja(raw: str) -> str:
 def load_jajeon() -> dict:
     # import a 漢字 - 한글 conversion table
     jajeon = {}
-    if __name__ == "__main__":
-        jajeon_path = Path().absolute().parent / 'tables' / 'hanja.tsv'
-    else:
-        jajeon_path = Path().absolute() / 'tables' / 'hanja.tsv'
+    jajeon_path = Path(__file__).parent.parent / 'tables' / 'hanja.tsv'
     with open(jajeon_path, newline='', encoding='utf-8') as f:
         reader = csv.reader(f, delimiter='\t')
         for row in reader:

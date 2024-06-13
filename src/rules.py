@@ -49,11 +49,11 @@ def palatalize(word: Word) -> str:
     for i, syllable in enumerate(syllables_in_jamo):
         try:
             next_syllable = syllables_in_jamo[i + 1]
+            if next_syllable[0] == 'ㅣ':
+                new_coda = palatalization_table.get(syllable[-1], syllable[-1])
+                syllables_in_jamo[i] = ''.join(list(syllables_in_jamo[i])[:-1] + [new_coda])
         except IndexError:
             continue
-        if next_syllable[0] == 'ㅣ':
-            new_coda = palatalization_table.get(syllable[-1], syllable[-1])
-            syllables_in_jamo[i] = ''.join(list(syllables_in_jamo[i])[:-1] + [new_coda])
     new_jamo = ''.join(syllables_in_jamo)
     return new_jamo
 
@@ -82,6 +82,9 @@ def delete_h(word: Word) -> str:
     h_locations = get_substring_ind(string=word.jamo, pattern='ㅎ')
 
     for h_location in reversed(h_locations):
+        if h_location == 0:
+            # a word-initial h cannot undergo deletion
+            continue
         preceding = word.jamo[h_location - 1]
         succeeding = word.jamo[h_location + 1]
         if preceding in SONORANTS and succeeding in SONORANTS:

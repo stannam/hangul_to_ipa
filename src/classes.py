@@ -11,10 +11,7 @@ class ConversionTable:
     def __init__(self, name):
         self.name = name
         # Open the tab-delimited file located in the 'tables' folder
-        if __name__ == "__main__":
-            table_path = Path().absolute().parent / 'tables' / f'{self.name}.csv'
-        else:
-            table_path = Path().absolute() / 'tables' / f'{self.name}.csv'
+        table_path = Path(__file__).parent.parent / 'tables' / f'{self.name}.csv'
         with open(table_path, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f, delimiter=',')
             # Iterate over each row in the file
