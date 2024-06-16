@@ -13,4 +13,4 @@ def main(word: str = None) -> None:
         return convert(word, sep='.')
 
 if __name__ == '__main__':
-    main()
+    print(main("굳이?"))

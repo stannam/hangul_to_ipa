@@ -2,6 +2,9 @@
 # convert() is the entry point for converting Korean orthography into transcription
 
 import regex as re
+from base64 import b64decode
+from typing import Union
+
 from src.classes import ConversionTable, Word
 import src.rules as rules
 
@@ -71,6 +74,37 @@ def convert(hangul: str,
         transcribed = rules.apply_phonetics(transcribed, rules_to_apply)
 
     return sep.join(transcribed)
+
+
+def convert_many(long_content: str,
+                 rules_to_apply: str = 'pastcnhovr',
+                 convention: str = 'ipa',
+                 sep: str = '') -> Union[int, str]:
+    # decode uploaded file and create a wordlist to pass to convert()
+    decoded = b64decode(long_content).decode('utf-8')
+    decoded = decoded.replace('\r\n', '\n').replace('\r', '\n')  # normalize line endings
+    decoded = decoded.replace('\n\n', '')  # remove empty line at the file end
+
+    input_internal_sep = '\t' if '\t' in decoded else ','
+
+    if '\n' in decoded:
+        # a vertical wordlist uploaded
+        input_lines = decoded.split('\n')
+        wordlist = [l.split(input_internal_sep)[1].strip() for l in input_lines if len(l) > 0]
+    else:
+        # a horizontal wordlist uploaded
+        wordlist = decoded.split(input_internal_sep)
+
+    # iterate over wordlist and populate res
+    res = ['Orthography\tIPA']
+    for word in wordlist:
+        converted_r = convert(hangul=word,
+                              rules_to_apply=rules_to_apply,
+                              convention=convention,
+                              sep=sep)
+        res.append(f'{word.strip()}\t{converted_r.strip()}')
+
+    return '\n'.join(res)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-from dash import html
+from dash import html, dcc
 import dash_bootstrap_components as dbc
 from app_components.sample_word import sample_word
 
@@ -11,19 +11,19 @@ donation_ribbon = dbc.Stack([
                         className="alert-link"),
                  ],
                 id="alert-fade",
-                color="secondary",
+                color="warning",
                 dismissable=True,
                 is_open=True,
                 ),
         dbc.Alert(
             ["이 앱이 유익하다면 ",
-             html.A("토스로 기부해주세요 (익명가능).",
+             html.A("토스로 후원해주세요 (익명가능).",
                     href="https://toss.me/sleepywug",
                     target="_blank",
                     className="alert-link"),
              ],
             id="alert-fade-kor",
-            color="secondary",
+            color="warning",
             dismissable=True,
             is_open=True,
         ),
@@ -41,7 +41,6 @@ header = dbc.Card(
     color='#002145',
     inverse=True,
     style={'height': '100px', 'marginTop': '10px', 'marginBottom': '20px'},
-
 )
 
 
@@ -62,12 +61,12 @@ main_buttons = dbc.ButtonGroup(
             className='mb-3',
             color='primary'
         ), dbc.Button(
-            "Settings",
-            id='settings-btn',
+            "Advanced",
+            id='advanced-btn',
             className='mb-3',
             color='secondary',
             n_clicks=0
-        )
+        ),
     ],
     className="me-1",
 )
@@ -100,6 +99,47 @@ yale_parameters = dbc.Checklist(
 )
 
 
+file_io = dbc.Row(
+    [dbc.Col(
+        children=[
+            dbc.Label("Convert a wordlist", style={'fontWeight': 'bold'}),
+            dcc.Upload(id="upload-data",
+                       children="Drag and drop or click here to upload a wordlist (.txt)",
+                       style={
+                           'width': '100%',
+                           'height': '60px',
+                           'lineHeight': '60px',
+                           'borderWidth': '1px',
+                           'borderStyle': 'dashed',
+                           'borderRadius': '5px',
+                           'textAlign': 'center',
+                           'margin': '5px'
+                       },
+                       multiple=False),
+            dbc.FormText(id="upload-explain",
+                         children=["Convert many words with the settings above. ",
+                                   html.A("Example file for reference",
+                                          href="https://blog.kakaocdn.net/dn/bwC5Ic/btrIRHihLsS/X2sZK9vql4HSftGvMoK2Gk/%EA%B0%80%EB%A1%9C%EC%98%88%EC%8B%9C.txt?attach=1&knm=tfile.txt",
+                                          target="_blank",
+                                          className="alert-link")
+                                   ]),
+        ]
+    ),
+     dcc.Download(id="download-processed-data")]
+)
+
+
+set_separator = dbc.Row(
+    dbc.Col(
+        children=[
+            dbc.Label("Segments are separated by...", style={'fontWeight': 'bold'}),
+            dbc.Input(id="separator", value=" ", type="text", maxLength=1),
+            dbc.FormText(id="sep-example", children="Preview: hɑŋɡɯl"),
+        ]
+    ),
+    className='mb-3'
+)
+
 collapsed_parameter_setter = dbc.Collapse(
     dbc.Card(
         [
@@ -112,16 +152,16 @@ collapsed_parameter_setter = dbc.Collapse(
                 value='ipa',
                 id="ipa-yale",
                 inline=True,
-                className="mb-4"
+                className="mb-3"
             ),
             dbc.Label("Phonological rules", style={'fontWeight': 'bold'}),
             dbc.Row(ipa_parameters, id='transcription_settings', className='mb-3'),
-            dbc.Label("Segments are separated by...", style={'fontWeight': 'bold'}),
-            dbc.Input(id="separator", value="", type="text", maxLength=1),
-            dbc.FormText(id="sep-example", children="Preview: hɑŋɡɯl")
+            set_separator,
+            file_io
+
         ],
         body=True),
-    id="settings",
+    id="advanced",
     is_open=False,
 )
 

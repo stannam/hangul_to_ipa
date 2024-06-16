@@ -1,6 +1,6 @@
-from dash import Dash, Output, Input, State, html
+from dash import Dash, Output, Input, State, no_update
 from app_components.components import *
-from src.worker import convert
+from src.worker import convert, convert_many
 
 
 # app
@@ -28,10 +28,13 @@ app.layout = html.Div(
 )
 
 
+# callbacks
+
+# click 'advanced' btn -> open collapsed settings card
 @app.callback(
-    Output("settings", "is_open"),
-    [Input("settings-btn", "n_clicks")],
-    [State("settings", "is_open")],
+    Output("advanced", "is_open"),
+    [Input("advanced-btn", "n_clicks")],
+    [State("advanced", "is_open")],
 )
 def toggle_collapse(n, is_open):
     if n:
@@ -39,6 +42,7 @@ def toggle_collapse(n, is_open):
     return is_open
 
 
+# toggle between ipa and yale
 @app.callback(
     Output('transcription_settings', 'children'),
     [Input('ipa-yale', 'value')]
@@ -51,6 +55,17 @@ def update_transcription_settings(selected_value):
     return html.Div()  # Return an empty div if no option is selected
 
 
+# update separator example
+@app.callback(
+    [Output("sep-example", "children"),],
+    [Input("separator", "value"),],
+)
+def show_sep_example(sep):
+    example = f"Preview: {sep.join(['h', 'ɑ', 'ŋ', 'ɡ', 'ɯ', 'l'])}"
+    return [example]
+
+
+# the engine of this app. convert one word
 @app.callback(
     [Output("echo-input", "children"),
      Output("output-label", "children"),
@@ -73,13 +88,41 @@ def transcribe(usr_input, placeholder, convention, rules, separator):
     return to_convert, result_label, result
 
 
+# accept .txt file as a wordlist and convert many words
 @app.callback(
-    [Output("sep-example", "children"),],
-    [Input("separator", "value"),],
+    Output('download-processed-data', 'data'),
+    [Input('upload-data', 'contents'),
+     Input('ipa-yale', 'value'),
+     Input("parameter-checklist", "value"),
+     Input("separator", "value")
+     ],
+    [State('upload-data', 'filename'), State('upload-data', 'last_modified')],
+    prevent_initial_call=True,
 )
-def show_sep_example(sep):
-    example = f"Preview: {sep.join(['h', 'ɑ', 'ŋ', 'ɡ', 'ɯ', 'l'])}"
-    return [example]
+def transcribe_many(content, convention, rules, separator, name, date):
+    if content is None:
+        return no_update
+
+    content_type, content_string = content.split(',')
+    if 'text' not in content_type:
+        return no_update
+
+    rules = ''.join(rules)
+
+    try:
+        result = convert_many(long_content=content_string,
+                              rules_to_apply=rules,
+                              convention=convention,
+                              sep=separator)
+    except Exception as e:
+        print(f"[DEBUG] {e}")
+        return no_update
+
+    if isinstance(result, int):
+        # encountered error, typically file type not compitible
+        return None
+    return dict(content=result,
+                filename=f'[CONVERTED] {name}')
 
 
 if __name__ == "__main__":
