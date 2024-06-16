@@ -4,7 +4,7 @@ A dash app that transcribes 한글 into [hɑŋɡɯl].
 **Enter 한글, get [hɑŋɡɯl].**
 **Click [here](https://hangul-to-ipa.herokuapp.com/) to use.**
 
-This web app applies phonological rules to Korean orthographic forms (Hangul/Hangeul/한글) and transcribe them into IPA. It automatically applies phonological rules from [Shin, Kiaer, and Cha (2012) Ch. 8](https://doi.org/10.1017/CBO9781139342858.010). These are rules related to surface phonotactics and syllable structure constraints. The R implementation is motivated by '[hangul converter](https://github.com/stannam/KPNN/blob/master/hangul_converter.r),' a part of KPNN. A similar database of Korean surface forms is available as K-SPAN by [Holliday, Turnbull and Eychenne (2017)](https://link.springer.com/article/10.3758/s13428-016-0836-8), though they do not provide on-the-spot transcription.
+This web app applies phonological rules to Korean orthographic forms (Hangul/Hangeul/한글) and transcribe them into IPA. It lets you select phonological rules from [Shin, Kiaer, and Cha (2012) Ch. 8](https://doi.org/10.1017/CBO9781139342858.010) and apply them. A similar database of Korean surface forms is available as K-SPAN by [Holliday, Turnbull and Eychenne (2017)](https://link.springer.com/article/10.3758/s13428-016-0836-8), though they do not provide on-the-spot transcription nor selectively applying a subset of Korean phonological rules.
 
 In addition to automatic transcription, this program:
  * transliterates Korean orthography in accordance with the Yale Romanization of Korean. The Yale convention is a de facto standard in Korean linguistics. See Martin, Samuel E. (1992). A Reference Grammar of Korean. for details.
@@ -12,19 +12,25 @@ In addition to automatic transcription, this program:
 
 This program does not apply most rules that are sensitive to morphological or other extra-phonological information. Therefore, it works best with monomorphemic words and may not produce reliable outputs otherwise. For instance, Compensatory Vowel Lengthening, Vowel Deletion, Glide Formation, and others cannot be implemented without morphological information. Likewise, /n/-Insertion and /l/-Tensification need etymological information.
 
+Its earlier R implementation was motivated by '[hangul converter](https://github.com/stannam/KPNN/blob/master/hangul_converter.r),' a part of KPNN. 
+
 ## How to use
 
-<img src= "https://user-images.githubusercontent.com/43150234/182013447-b681125d-95b9-4d32-a755-b5cbe5f5bbda.png" width=50% />
+ 1. (see the image below) Enter your Korean word (e.g., 국물 'soup', 韓國語 'the Korean language', or 음운론 'phonology') in the textbox marked red. The results will show up in the blue circle at the bottom.
 
- 1. Enter your Korean word (e.g., 국물 'soup', 韓國語 'the Korean language', or 음운론 'phonology') in the textbox marked red. The results will return on the right side panel.
+ <img src= "https://github.com/stannam/hangul_to_ipa/assets/43150234/ef0be14b-d608-4b32-b38c-59882b7bfe7c" width=60% />
+ 
+ 2. Click the 'Advanced' button to open advanced settings.
+   
+ 3. (see the image below) Select either 'IPA Transcription' or 'Yale Romanization.' 
 
-<img src= "https://user-images.githubusercontent.com/43150234/182013575-e9e20f45-38d8-40c6-8dc4-b673fba2836a.png" width=50% />
+ <img src= "https://github.com/stannam/hangul_to_ipa/assets/43150234/f8b57430-1f37-483d-b6b4-3de656351791" width=60% />
 
- 2. Select either 'IPA Transcription' or 'Yale Romanization.' Yale Romanization transliterates the spelling, so phonological rules are irrelevant. With IPA Transcription, on the other hand, you can choose to apply all or some phonological rules. See below for phonological rules implemented in this program.
+ 4. (see the image below) Choose to apply all or some phonological rules. See below for phonological rules implemented in this program. NB: Yale Romanization transliterates the spelling, so phonological rules are irrelevant.
 
-<img src= "https://user-images.githubusercontent.com/43150234/182013839-1e3fa277-2478-46af-a2c7-bb9f86c67b35.png" width=50% />
+ <img src= "https://github.com/stannam/hangul_to_ipa/assets/43150234/79d65296-eb06-4232-a87d-e5361f57a54f" width=60% />
 
- 3. You can also upload a text file and get it transcribed/transliterated. The file should be column-delimited. Here are example files [file1](https://blog.kakaocdn.net/dn/dIRnEk/btrIADmZAEY/F24hptgcGcmqeKFMFA2Yr0/가로예시.txt?attach=1&knm=tfile.txt) [file2](https://blog.kakaocdn.net/dn/bV4ktG/btrIBUa5fGe/tZnsSpYrUwPUGGv45ZkZAk/세로예시.txt?attach=1&knm=tfile.txt)
+ 5. You can also upload a text file and get it transcribed/transliterated. The file should be column-delimited. Here are example files [file1](https://blog.kakaocdn.net/dn/dIRnEk/btrIADmZAEY/F24hptgcGcmqeKFMFA2Yr0/가로예시.txt?attach=1&knm=tfile.txt) [file2](https://blog.kakaocdn.net/dn/bV4ktG/btrIBUa5fGe/tZnsSpYrUwPUGGv45ZkZAk/세로예시.txt?attach=1&knm=tfile.txt)
 
 ## Inventory
 ### Consonants
