@@ -93,7 +93,7 @@ class Word:
     def to_jamo(self, hangul: str, no_empty_onset: bool = True, sboundary: bool = False) -> str:
         # Convert Hangul forms to jamo, remove empty onset ㅇ
         # e.g., input "안녕" output "ㅏㄴㄴㅕㅇ"
-        not_hangul = r'[^가-힣]'
+        not_hangul = r'[^가-힣ㄱ-ㅎㅏ-ㅣ]'
         cleaned_hangul = re.sub(not_hangul, '', hangul)  # hangul without special characters
         jamo_forms = hangul_to_jamos(cleaned_hangul)
 
