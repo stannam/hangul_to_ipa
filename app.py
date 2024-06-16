@@ -1,5 +1,6 @@
 from dash import Dash, Output, Input, State, no_update
 from app_components.components import *
+from app_components.interface_languages import components_config, translations
 from src.worker import convert, convert_many
 
 
@@ -30,6 +31,18 @@ app.layout = html.Div(
 
 # callbacks
 
+# switch between English and Korean
+@app.callback(
+    [Output(component['id'], component['property']) for component in components_config.values()],
+    [Input("language-btn", "n_clicks")],
+)
+def change_language(n):
+    language = 'en' if n % 2 == 0 else 'ko'
+    return [
+        translations[language][key] for key in components_config.keys()
+    ]
+
+
 # click 'advanced' btn -> open collapsed settings card
 @app.callback(
     Output("advanced", "is_open"),
@@ -45,23 +58,39 @@ def toggle_collapse(n, is_open):
 # toggle between ipa and yale
 @app.callback(
     Output('transcription_settings', 'children'),
-    [Input('ipa-yale', 'value')]
+    [Input('ipa-yale', 'value'),
+     Input("language-btn", "n_clicks")]
 )
-def update_transcription_settings(selected_value):
+def update_transcription_settings(selected_value, lang_int):
+    language = 'en' if lang_int % 2 == 0 else 'ko'
     if selected_value == 'ipa':
-        return ipa_parameters
+        if language == 'en':
+            return ipa_parameters
+        elif language == 'ko':
+            return ipa_parameters_ko
     elif selected_value == 'yale':
-        return yale_parameters
+        if language == 'en':
+            return yale_parameters
+        elif language == 'ko':
+            return yale_parameters_ko
+    #elif selected_value == 'rr':
+    #    return rr_parameters
     return html.Div()  # Return an empty div if no option is selected
 
 
 # update separator example
 @app.callback(
     [Output("sep-example", "children"),],
-    [Input("separator", "value"),],
+    [Input("separator", "value"),
+     Input("language-btn", "n_clicks")],
 )
-def show_sep_example(sep):
-    example = f"Preview: {sep.join(['h', 'ɑ', 'ŋ', 'ɡ', 'ɯ', 'l'])}"
+def show_sep_example(sep, lang_int):
+    language = 'en' if lang_int % 2 == 0 else 'ko'
+    example = sep.join(['h', 'ɑ', 'ŋ', 'ɡ', 'ɯ', 'l'])
+    if language == 'en':
+        example = f"Preview: {example}"
+    elif language == 'ko':
+        example = f"미리보기: {example}"
     return [example]
 
 
@@ -74,16 +103,21 @@ def show_sep_example(sep):
      Input("hangul-input","placeholder"),
      Input('ipa-yale', 'value'),
      Input("parameter-checklist", "value"),
-     Input("separator", "value")],
+     Input("separator", "value"),
+     Input("language-btn", "n_clicks")],
 )
-def transcribe(usr_input, placeholder, convention, rules, separator):
+def transcribe(usr_input, placeholder, convention, rules, separator, lang_int):
     to_convert = usr_input if usr_input is not None else placeholder
     applying_rules = ''.join(rules)
+    print(f'[DEBUG] convert parameters: hangul={to_convert}, rules={applying_rules}, sep={separator}')
     result = convert(hangul=to_convert,
                      rules_to_apply=applying_rules,
                      convention=convention,
                      sep=separator)
     result_label = f'Your {convention.upper()} output:'
+    if lang_int % 2 != 0:
+        # if the interface language is Korean
+        result_label = f'{convention.upper()} 변환 결과:'
     result = f'[{result}]' if convention == 'ipa' else result
     return to_convert, result_label, result
 

@@ -45,9 +45,10 @@ header = dbc.Card(
 
 
 input_box = dbc.Row(dbc.Col([
-    dbc.Label("Enter your 한글:"),
+    dbc.Label(children="Enter your 한글:", id="hangul-input-label"),
     dbc.Input(id='hangul-input', placeholder=sample_word, type='text'),
     dbc.FormText("Type something in the box above. Upon launching, a random word will appear",
+                 id='hangul-input-help',
                  className='mb-5'),
     ],
 ))
@@ -60,6 +61,12 @@ main_buttons = dbc.ButtonGroup(
             id="convert-btn",
             className='mb-3',
             color='primary'
+        ), dbc.Button(
+            "우리말로",
+            id='language-btn',
+            className='mb-3',
+            color='info',
+            n_clicks=0
         ), dbc.Button(
             "Advanced",
             id='advanced-btn',
@@ -74,15 +81,15 @@ main_buttons = dbc.ButtonGroup(
 
 ipa_parameters = dbc.Checklist(
     options=[
-        {"label": "Palatalization 구개음화 (e.g., 맏이 mɑt-i -> mɑdʒi 'the eldest child')", "value": "p"},
-        {"label": "Aspiration 격음화 (e.g., 녹화 nokhwa -> nokʰwa 'record')", "value": "a"},
-        {"label": "Manner assimilation 음운동화 (cf. Obstruent Nasalisation, Liquid Nasalisation and Lateralisation in Shin et al 2012)", "value": "s"},
-        {"label": "Post-obstruent tensification 필수적 경음화 (e.g., 박수 pɑksu -> pɑks*u 'hand clap')", "value": "t"},
-        {"label": "Complex coda simplification 자음군단순화 (e.g., 닭도 talk-to -> takto 'Chicken-also' NB: the SR must be [takt*o])", "value": "c"},
-        {"label": "Coda neutralization 음절말 장애음 중화 (e.g., 빛빚빗 bitɕʰ, bitɕ, bis -> bit 'light / debt / hair comb')", "value": "n"},
-        {"label": "(Optional) intersonorant H-deletion 공명음사이 'ㅎ' 삭제 (e.g., 선호 sʌnho → sʌno 'preference')", "value": "h"},
-        {"label": "(Optional) non-coronalization 수의적 조음위치동화 (e.g., 한글 hɑnkɯl → hɑŋɡɯl 'the Korean alphabet')", "value": "o"},
-        {"label": "(Phonetic) intersonorant obstruent voicing 장애음 유성음화 (e.g., 부부 pupu → pubu 'married couple')", "value": "v"},
+        {"label": "Palatalization (e.g., mɑt-i -> mɑdʒi 'the eldest child')", "value": "p"},
+        {"label": "Aspiration (e.g., nokhwa -> nokʰwa 'record')", "value": "a"},
+        {"label": "Manner assimilation (cf. Obstruent Nasalisation, Liquid Nasalisation and Lateralisation in Shin et al 2012)", "value": "s"},
+        {"label": "Post-obstruent tensification (e.g., pɑksu -> pɑks*u 'hand clap')", "value": "t"},
+        {"label": "Complex coda simplification (e.g., talk-to -> takto 'Chicken-also' NB: the SR must be [takt*o])", "value": "c"},
+        {"label": "Coda neutralization (e.g., bitɕʰ, bitɕ, bis -> bit 'light / debt / hair comb')", "value": "n"},
+        {"label": "(Optional) intersonorant H-deletion (e.g., sʌnho → sʌno 'preference')", "value": "h"},
+        {"label": "(Optional) non-coronalization (e.g., hɑnkɯl → hɑŋɡɯl 'the Korean alphabet')", "value": "o"},
+        {"label": "(Phonetic) intersonorant obstruent voicing (e.g., pupu → pubu 'married couple')", "value": "v"},
         {"label": "(Phonetic) liquid alternation (e.g., 이리 ili → iɾi 'wolf')", "value": "r"},
         ],
     value=list('pastcnhovr'),
@@ -99,10 +106,38 @@ yale_parameters = dbc.Checklist(
 )
 
 
+ipa_parameters_ko = dbc.Checklist(
+    options=[
+        {"label": "구개음화 (예: mɑt-i -> mɑdʒi '맏이')", "value": "p"},
+        {"label": "격음화 (예: nokhwa -> nokʰwa '녹화')", "value": "a"},
+        {"label": "음운동화 (장애음 비음화, 유음 비음화, 유음화. Shin et al 2012)", "value": "s"},
+        {"label": "장애음 뒤 경음화 (예: pɑksu -> pɑks*u '박수')", "value": "t"},
+        {"label": "자음군단순화 (예: talk-to -> takto '닭도' 주의: 최종 표면형은 [takt*o])", "value": "c"},
+        {"label": "음절말 평폐쇄음화 (예: bitɕʰ, bitɕ, bis -> bit '빛/빚/빗')", "value": "n"},
+        {"label": "(선택) 공명음사이 'ㅎ' 삭제 (예: sʌnho → sʌno '선호')", "value": "h"},
+        {"label": "(선택) 수의적 조음위치동화 (예: hɑnkɯl → hɑŋɡɯl '한글')", "value": "o"},
+        {"label": "(음성) 장애음 유성음화 (예: pupu → pubu '부부')", "value": "v"},
+        {"label": "(음성) 유음 변이음 선택 (예: ili → iɾi '이리')", "value": "r"},
+        ],
+    value=list('pastcnhovr'),
+    id="parameter-checklist",
+)
+
+
+yale_parameters_ko = dbc.Checklist(
+    options=[
+        {"label": "양순음 뒤 고모음 중화", "value": "u"},
+        ],
+    value=list('u'),
+    id="parameter-checklist",
+)
+
+
+
 file_io = dbc.Row(
     [dbc.Col(
         children=[
-            dbc.Label("Convert a wordlist", style={'fontWeight': 'bold'}),
+            dbc.Label("Convert a wordlist", style={'fontWeight': 'bold'}, id='convert-label'),
             dcc.Upload(id="upload-data",
                        children="Drag and drop or click here to upload a wordlist (.txt)",
                        style={
@@ -132,7 +167,7 @@ file_io = dbc.Row(
 set_separator = dbc.Row(
     dbc.Col(
         children=[
-            dbc.Label("Segments are separated by...", style={'fontWeight': 'bold'}),
+            dbc.Label("Segments are separated by...", style={'fontWeight': 'bold'}, id='sep-help'),
             dbc.Input(id="separator", value=" ", type="text", maxLength=1),
             dbc.FormText(id="sep-example", children="Preview: hɑŋɡɯl"),
         ]
@@ -143,7 +178,7 @@ set_separator = dbc.Row(
 collapsed_parameter_setter = dbc.Collapse(
     dbc.Card(
         [
-            dbc.Label("What do you want to do?", style={'fontWeight': 'bold'}),
+            dbc.Label("What do you want to do?", style={'fontWeight': 'bold'}, id='what-want'),
             dbc.RadioItems(
                 options=[
                     {"label": "IPA Transcription", "value": "ipa"},
@@ -154,7 +189,7 @@ collapsed_parameter_setter = dbc.Collapse(
                 inline=True,
                 className="mb-3"
             ),
-            dbc.Label("Phonological rules", style={'fontWeight': 'bold'}),
+            dbc.Label("Phonological rules", style={'fontWeight': 'bold'}, id='phon-rules'),
             dbc.Row(ipa_parameters, id='transcription_settings', className='mb-3'),
             set_separator,
             file_io
@@ -169,13 +204,12 @@ collapsed_parameter_setter = dbc.Collapse(
 output_card = dbc.Card(
         [
             dbc.Row([
-                    dbc.Label("Your input:", style={'fontWeight': 'bold'}),
+                    dbc.Label("Your input:", style={'fontWeight': 'bold'}, id='input-label'),
                     dbc.Label(
                         id='echo-input',
                         children='',
                     ),
                     ],
-                    id='echo-input-row',
                     className='mb-3'
                     ),
             dbc.Row(
@@ -188,8 +222,6 @@ output_card = dbc.Card(
                         readOnly=True
                     ),
                 ],
-                id='output-row'
-
             ),
         ],
         body=True,
