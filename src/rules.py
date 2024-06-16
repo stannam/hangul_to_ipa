@@ -82,7 +82,7 @@ def delete_h(word: Word) -> str:
     h_locations = get_substring_ind(string=word.jamo, pattern='ㅎ')
 
     for h_location in reversed(h_locations):
-        if h_location == 0:
+        if h_location == 0 or h_location == len(word.jamo) - 1:
             # a word-initial h cannot undergo deletion
             continue
         preceding = word.jamo[h_location - 1]
