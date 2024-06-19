@@ -104,15 +104,14 @@ def simplify_coda(input_word: Word, word_final: bool = False) -> Word:
         converted = CT_double_codas.apply(text=double_coda, find_in='_separated')
         return before + converted + after
 
-    if not word_final:
-        while True:
-            double_coda_loc = get_substring_ind(input_word.cv, 'VCCC')  # get all CCC location
-            if len(double_coda_loc) == 0:
-                break  # if no, exit while-loop
+    while True:
+        double_coda_loc = get_substring_ind(input_word.cv, 'VCCC')  # get all CCC location
+        if len(double_coda_loc) == 0:
+            break  # if no, exit while-loop
 
-            cc = double_coda_loc[0]  # work on the leftest CCC
-            new_jamo = simplify(input_word.jamo, cc)
-            input_word.jamo = new_jamo
+        cc = double_coda_loc[0]  # work on the leftest CCC
+        new_jamo = simplify(input_word.jamo, cc)
+        input_word.jamo = new_jamo
 
     # additionally, simplify word-final consonant cluster
     final_CC = get_substring_ind(input_word.cv, 'CC$')
