@@ -108,25 +108,5 @@ def convert_many(long_content: str,
 
 
 if __name__ == "__main__":
-    print(convert("없는"))
-    """
-    filler_list = []
-    with open("E:\\Dropbox\\Dissertation\\Korean experiment\\stimuli\\2024_06_11_fillers_in_Park's_convention.tsv",
-              'r',
-              encoding='utf-8') as f:
-        lines = f.readlines()
-        for line in lines[1:]:  # Skip the header line
-            columns = line.strip().split('\t')
-            if len(columns) >= 4:
-                filler_list.append(columns[3])
-
-    park_list = []
-    for f in filler_list:
-        f_in_park = convert(f,
-                            rules_to_apply="",
-                            convention="park",
-                            sep=' ')
-        park_list.append(f_in_park)
-
-    print(park_list)
-    """
+    example = convert("예시")
+    print(example)   # jɛ s i
