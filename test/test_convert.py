@@ -17,7 +17,7 @@ class TestConvert(unittest.TestCase):
         for input_str, correct_output in self.test_cases:
             with self.subTest(input_str=input_str, expected=correct_output):
                 self.assertEqual(convert(input_str), correct_output)
-                print('Success:')
+                print(f'Success: {input_str} -> {correct_output}')
 
 
 if __name__ == "__main__":
