@@ -4,7 +4,7 @@ A dash app that transcribes 한글 into [hɑŋɡɯl].
 **Enter 한글, get [hɑŋɡɯl].**
 **Click [here](https://hangul-to-ipa.herokuapp.com/) to use.**
 
-This web app applies phonological rules to Korean orthographic forms (Hangul/Hangeul/한글) and transcribe them into IPA. It lets you select phonological rules from [Shin, Kiaer, and Cha (2012) Ch. 8](https://doi.org/10.1017/CBO9781139342858.010) and apply them. A similar database of Korean surface forms is available as K-SPAN by [Holliday, Turnbull and Eychenne (2017)](https://link.springer.com/article/10.3758/s13428-016-0836-8), though they do not provide on-the-spot transcription nor selectively applying a subset of Korean phonological rules.
+This web app applies phonological rules to Korean orthographic forms (Hangul/Hangeul/한글) and transcribes them into IPA. It lets you select phonological rules from [Shin, Kiaer, and Cha (2012) Ch. 8](https://doi.org/10.1017/CBO9781139342858.010) and apply them. A similar database of Korean surface forms is available as K-SPAN by [Holliday, Turnbull and Eychenne (2017)](https://link.springer.com/article/10.3758/s13428-016-0836-8), though they do not provide on-the-spot transcription nor selectively applying a subset of Korean phonological rules.
 
 In addition to automatic transcription, this program:
  * transliterates Korean orthography in accordance with the Yale Romanization of Korean. The Yale convention is a de facto standard in Korean linguistics. See Martin, Samuel E. (1992). A Reference Grammar of Korean. for details.
