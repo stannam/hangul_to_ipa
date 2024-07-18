@@ -79,6 +79,13 @@ main_buttons = dbc.ButtonGroup(
 )
 
 
+help_links = dbc.FormText(children=[
+    html.A(children="어케함?", href="https://linguisting.tistory.com/67", target="_blank"),
+    " | ",
+    html.A(children="Help", href="https://github.com/stannam/hangul_to_ipa#readme", target="_blank"),
+])
+
+
 ipa_parameters = dbc.Checklist(
     options=[
         {"label": "Palatalization (e.g., mɑt-i -> mɑdʒi 'the eldest child')", "value": "p"},

@@ -21,6 +21,7 @@ app.layout = html.Div(
         input_box,
         html.Br(),
         main_buttons,
+        help_links,
         collapsed_parameter_setter,
         output_card,
         footer
