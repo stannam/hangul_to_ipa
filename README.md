@@ -16,7 +16,7 @@ Its earlier R implementation was motivated by '[hangul converter](https://github
 
 ## How to use
 
- 1. (see the image below) Enter your Korean word (e.g., 국물 'soup', 韓國語 'the Korean language', or 음운론 'phonology') in the textbox marked red. The results will show up in the blue circle at the bottom.
+ 1. (see the image below) Enter your Korean word (e.g., 예시입니다 'this is an example', 韓國語 'the Korean language', or 음운론 'phonology') in the textbox marked red. The results will show up in the blue circle at the bottom.
 
  <img src= "https://github.com/stannam/hangul_to_ipa/assets/43150234/ef0be14b-d608-4b32-b38c-59882b7bfe7c" width=60% />
  
