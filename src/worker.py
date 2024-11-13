@@ -1,4 +1,4 @@
-# the engine that does the hard lifting.
+# the engine that does the heavy lifting.
 # convert() is the entry point for converting Korean orthography into transcription
 
 import regex as re
