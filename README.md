@@ -11,11 +11,11 @@ It was motivated by '[hangul converter](https://github.com/stannam/KPNN/blob/mas
 ## Features:
 This program:
  * provides automatic IPA transcriptions
- * transliterates Korean orthography in the Yale Romanization system, the _de facto_ standard in Korean linguistics (se Martin, Samuel E. (1992). A Reference Grammar of Korean. for details of the Yale system), and 
+ * transliterates Korean orthography in the Yale Romanization system, the _de facto_ standard in Korean linguistics (see Martin, Samuel E. (1992). A Reference Grammar of Korean. for details of the Yale system), and 
  * transcribes Chinese characters as pronounced in Korean. For example, 不正確 'imprecise' is transcribed as [pudʑʌŋwak]
 
 ## Limitations:
-**This program focuses on phonology proper**: i.e., investigating the effects of phonological rules and showing hypothetical forms with or without certain rules. In other words, **the goal is NOT deriving the actual random pronunciations as precisely as possible.** 
+**This program focuses on phonology proper**: i.e., investigating the effects of phonological rules and showing hypothetical forms with or without certain rules. In other words, **the goal is NOT to simulate the real-world pronunciations as precisely as possible.** 
 
 It does **not** account for most rules sensitive to morphological or extra-phonological information, such as:
  * Compensatory Vowel Lengthening
@@ -24,6 +24,7 @@ It does **not** account for most rules sensitive to morphological or extra-phono
  * N-Insertion
  * L-Tensification
 
+If you want to approximate casual pronunciations closely, consider using [a neural model](https://linguisting.tistory.com/145) (described in Korean).
 
 ## How to use
 
