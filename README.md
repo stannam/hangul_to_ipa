@@ -4,15 +4,27 @@ A dash app that transcribes 한글 into [hɑŋɡɯl].
 **Enter 한글, get [hɑŋɡɯl].**
 **Click [here](https://hangul-to-ipa.herokuapp.com/) to use.**
 
-This web app applies phonological rules to Korean orthographic forms (Hangul/Hangeul/한글) and transcribes them into IPA. You can use this app to apply one or more phonological rules from [Shin, Kiaer, and Cha (2012) Ch. 8](https://doi.org/10.1017/CBO9781139342858.010). A similar database of Korean surface forms (i.e., the outputs of rule applications) is available as K-SPAN by [Holliday, Turnbull and Eychenne (2017)](https://link.springer.com/article/10.3758/s13428-016-0836-8), though they do not provide on-the-spot transcription nor selectively applying a subset of Korean phonological rules.
+This web app applies phonological rules to Korean orthographic forms (Hangul/Hangeul/한글) and transcribes them into IPA. You can use this app to apply one or more phonological rules in [Shin, Kiaer, and Cha (2012) Ch. 8](https://doi.org/10.1017/CBO9781139342858.010). A similar database of Korean surface forms, K-SPAN, by [Holliday, Turnbull and Eychenne (2017)](https://link.springer.com/article/10.3758/s13428-016-0836-8) also provides outputs of rule applications but does not provide on-the-spot transcription or the capacity to selectively apply specific rules.
 
-In addition to automatic transcription, this program:
- * transliterates Korean orthography in accordance with the Yale Romanization of Korean. The Yale convention is a de facto standard in Korean linguistics. See Martin, Samuel E. (1992). A Reference Grammar of Korean. for details.
+It was motivated by '[hangul converter](https://github.com/stannam/KPNN/blob/master/hangul_converter.r),' a part of [KPNN](https://github.com/stannam/KPNN). 
+
+## Features:
+This program:
+ * provides automatic IPA transcriptions
+ * transliterates Korean orthography in the Yale Romanization system, the _de facto_ standard in Korean linguistics (see Martin, Samuel E. (1992). A Reference Grammar of Korean. for details of the Yale system), and 
  * transcribes Chinese characters as pronounced in Korean. For example, 不正確 'imprecise' is transcribed as [pudʑʌŋwak]
 
-Notably, this program focuses on phonological rules: i.e., investigating the effects of each rule application and showing hypothetical forms with or without rule applications. Thus, it does not apply most of the rules that are sensitive to morphological or other extra-phonological information. Therefore, it works best with monomorphemic words and may not produce reliable outputs otherwise. For instance, Compensatory Vowel Lengthening, Vowel Deletion, Glide Formation, and others cannot be implemented without morphological information. Likewise, /n/-Insertion and /l/-Tensification need etymological information.
+## Limitations:
+**This program focuses on phonology proper**: i.e., investigating the effects of phonological rules and showing hypothetical forms with or without certain rules. In other words, **the goal is NOT to simulate the real-world pronunciations as precisely as possible.** 
 
-Its earlier R implementation was motivated by '[hangul converter](https://github.com/stannam/KPNN/blob/master/hangul_converter.r),' a part of [KPNN](https://github.com/stannam/KPNN). 
+It does **not** account for most rules sensitive to morphological or extra-phonological information, such as:
+ * Compensatory Vowel Lengthening
+ * Vowel Deletion
+ * Glide Formation
+ * N-Insertion
+ * L-Tensification
+
+If you want to approximate casual pronunciations closely, consider using [a neural model](https://linguisting.tistory.com/145) (described in Korean).
 
 ## How to use
 
