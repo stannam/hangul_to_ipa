@@ -184,10 +184,18 @@ def alternate_lr(symbols: list) -> list:
 
     return res
 
-
-def apply_rules(word: Word, rules_to_apply: str = 'pastcnhovr') -> Word:
+def apply_morphology_rules(word: Word, rules_to_apply: str = 'pastcnhovr') -> Word:
     # 규칙의 종류와 순서
     # (P)alatalization: 구개음화 (맏이 -> 마지)
+
+    # apply palatalization
+    if 'p' in rules_to_apply and ('ㄷㅣ' in word.jamo or 'ㅌㅣ' in word.jamo):
+        word.jamo = palatalize(word)
+    return word
+
+
+def apply_phonology_rules(word: Word, rules_to_apply: str = 'pastcnhovr') -> Word:
+    # 규칙의 종류와 순서
     # (A)spiration: 격음화 (북한 -> 부칸)
     # a(S)similation: 음운동화
     # (T)ensification: 표준발음법 제23항(예외없는 경음화) 적용
@@ -195,10 +203,6 @@ def apply_rules(word: Word, rules_to_apply: str = 'pastcnhovr') -> Word:
     # coda (N)eutralization: 음절말 장애음 중화 (빛/빚/빗 -> 빝)
     # intersonorant (H)-deletion: 공명음 사이 'ㅎ' 삭제
     # intersonorant Obstruent (V)oicing: 공명음 사이 장애음 유성음화
-
-    # apply palatalization
-    if 'p' in rules_to_apply and ('ㄷㅣ' in word.jamo or 'ㅌㅣ' in word.jamo):
-        word.jamo = palatalize(word)
 
     # apply aspiration
     if 'a' in rules_to_apply and 'ㅎ' in word.jamo:

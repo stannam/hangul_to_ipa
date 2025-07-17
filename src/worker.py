@@ -51,11 +51,15 @@ def convert(hangul: str,
     hangul = sanitize(hangul)
     word = Word(hangul=hangul)
 
+    # apply rules
+    # morphological rules
+    word = rules.apply_morphology_rules(word, rules_to_apply)
+
     # resolve word-final consonant clusters right off the bat
     rules.simplify_coda(word)
 
-    # apply rules
-    word = rules.apply_rules(word, rules_to_apply)
+    # phonological rules
+    word = rules.apply_phonology_rules(word, rules_to_apply)
 
     # high mid/back vowel merger after bilabial (only for the Yale convention)
     if CT_convention.name == 'yale' and 'u' in rules_to_apply:
