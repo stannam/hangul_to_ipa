@@ -96,14 +96,14 @@ See [Shin, Kiaer, and Cha (2012) Ch. 8](https://doi.org/10.1017/CBO9781139342858
 ### Phonological
 1. Aspiration 격음화 (e.g., pukhɑn -> pukʰɑn 'North Korea')
 1. Place assimilation 음운동화 (e.g., Obstruent nasalisation, Liquid nasalisation and Lateralisation in Shin et al 2012)
-1. Post-obstruent tensification 필수적 경음화 (e.g., pɑksu -> pɑks*u 'hand clap')
-1. Complex coda simplification 자음군단순화 (e.g., talk-to -> takto 'Chicken-also' NB: the SR must be [takt*o])
-1. Coda neutralization 음절말 장애음 중화 (e.g., bitɕʰ, bitɕ, bis -> bit 'light / debt / hair comb')
+1. Post-obstruent tensification 필수적 경음화 (e.g., pɑk**s**u → pɑk**s***u 'hand clap')
+1. Complex coda simplification 자음군단순화 (e.g., ta**lk**-to → ta**k**to 'Chicken-also' NB: eventually, [takt*o])
+1. Coda neutralization 음절말 장애음 중화 (e.g., bit**ɕʰ**, bi**tɕ**, bi**s** → bi**t** 'light / debt / hair comb')
 
 ### Optional
-1. (Optional) intersonorant H-deletion 공명음사이 'ㅎ' 삭제 (e.g., sʌnho → sʌno 'preference')
-1. (Optional) non-coronalization 수의적 조음위치동화 (e.g., hɑnkɯl → hɑŋɡɯl 'the Korean alphabet')
+1. (Optional) intersonorant H-deletion 공명음사이 'ㅎ' 삭제 (e.g., sʌn**h**o → sʌno 'preference')
+1. (Optional) non-coronalization 수의적 조음위치동화 (e.g., hɑ**nk**ɯl → hɑ**ŋɡ**ɯl 'the Korean alphabet')
 
 ### Phonetic
-1. (Phonetic) intersonorant obstruent voicing 장애음 유성음화 (e.g., tɕikɑk → tɕiɡɑk 'being late')
-1. (Phonetic) liquid alternation [l ~ ɾ] (e.g., tʰɑlɑk → tʰɑɾɑk 'depravity')
+1. (Phonetic) intersonorant obstruent voicing 장애음 유성음화 (e.g., tɕi**k**ɑk → tɕi**ɡ**ɑk 'being late')
+1. (Phonetic) liquid alternation [l ~ ɾ] (e.g., tʰɑ**l**ɑk → tʰɑ**ɾ**ɑk 'depravity')
