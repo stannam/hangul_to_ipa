@@ -1,4 +1,4 @@
-# hangul_to_ipa
+# hangul_to_ipa (H2IPA)
 A dash app that transcribes 한글 into [hɑŋɡɯl].
 
 **Enter 한글, get [hɑŋɡɯl].**
