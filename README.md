@@ -2,7 +2,7 @@
 A dash app that transcribes 한글 into [hɑŋɡɯl].
 
 **Enter 한글, get [hɑŋɡɯl].**
-**Click [here](https://hangul-to-ipa.herokuapp.com/) to use.**
+**Click [here](https://h2ipa.stanleynam.ca/) to use.**
 
 This web app applies phonological rules to Korean orthographic forms (Hangul/Hangeul/한글) and transcribes them into IPA. You can use this app to apply one or more phonological rules in [Shin, Kiaer, and Cha (2012) Ch. 8](https://doi.org/10.1017/CBO9781139342858.010). A similar database of Korean surface forms, K-SPAN, by [Holliday, Turnbull and Eychenne (2017)](https://link.springer.com/article/10.3758/s13428-016-0836-8) also provides outputs of rule applications but does not provide on-the-spot transcription or the capacity to selectively apply specific rules.
 
