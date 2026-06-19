@@ -33,7 +33,7 @@ If you want to approximate casual pronunciations closely, consider using [a neur
  - See `./src/worker.py` to check the step-wise conversion.
 
 
-### Web app [(link)](https://hangul-to-ipa.herokuapp.com/)
+### Web app [(link)](https://h2ipa.stanleynam.ca)
 
  1. (see the image below) Enter your Korean word (e.g., 예시입니다 'this is an example', 韓國語 'the Korean language', or 음운론 'phonology') in the textbox marked red. The results will show up in the blue circle at the bottom.
 
